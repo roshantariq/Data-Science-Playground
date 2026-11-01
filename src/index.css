@@ -1,0 +1,106 @@
+/* Design tokens. Values come from the Design rules in the project plan.
+   Light is the base; dark applies from the system setting unless the
+   toggle has set data-theme on <html>. */
+:root {
+  --bg: #fff8ec;
+  --surface: #ffffff;
+  --text: #073b4c;
+  --text-muted: #3f5c66;
+  --grid: #ecd29b;
+  --action: #0e7194;
+  --on-action: #ffffff;
+  --machines: #06d6a0;
+  --on-machines: #073b4c;
+  --machines-mark: #06a37a;
+  --feel: #ffd166;
+  --on-feel: #073b4c;
+  --feel-mark: #a67c00;
+  --point: #073b4c;
+
+  --font-display: 'Unbounded', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-display: clamp(2.25rem, 5vw, 3.5rem);
+  --radius: 2px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #101518;
+    --surface: #151c20;
+    --text: #e6ecef;
+    --text-muted: #93a1a8;
+    --grid: #222c31;
+    --action: #5cc8f2;
+    --on-action: #101518;
+    --machines: #4fc3ad;
+    --on-machines: #101518;
+    --machines-mark: #4fc3ad;
+    --feel: #f2b544;
+    --on-feel: #101518;
+    --feel-mark: #f2b544;
+    --point: #e6ecef;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #101518;
+  --surface: #151c20;
+  --text: #e6ecef;
+  --text-muted: #93a1a8;
+  --grid: #222c31;
+  --action: #5cc8f2;
+  --on-action: #101518;
+  --machines: #4fc3ad;
+  --on-machines: #101518;
+  --machines-mark: #4fc3ad;
+  --feel: #f2b544;
+  --on-feel: #101518;
+  --feel-mark: #f2b544;
+  --point: #e6ecef;
+  color-scheme: dark;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 3px solid var(--action);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
