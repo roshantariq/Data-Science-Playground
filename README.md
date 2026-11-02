@@ -4,7 +4,7 @@ Interactive exhibits that teach data science by letting you play with it. Everyt
 
 ## Run locally
 
-Requires Node 22 or later.
+Requires Node 22.22 or later.
 
 ```bash
 npm install
