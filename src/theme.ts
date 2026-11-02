@@ -1,18 +1,23 @@
-export type Theme = 'light' | 'dark'
+export type Theme = 'system' | 'light' | 'dark'
 
 const KEY = 'theme'
 
-// The theme in effect: the saved choice, else the system setting.
+// The chosen theme; 'system' when nothing is set.
 export function currentTheme(): Theme {
   const set = document.documentElement.dataset.theme
-  if (set === 'light' || set === 'dark') return set
-  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return set === 'light' || set === 'dark' ? set : 'system'
 }
 
 export function setTheme(theme: Theme) {
-  document.documentElement.dataset.theme = theme
+  const root = document.documentElement
   try {
-    localStorage.setItem(KEY, theme)
+    if (theme === 'system') {
+      delete root.dataset.theme
+      localStorage.removeItem(KEY)
+    } else {
+      root.dataset.theme = theme
+      localStorage.setItem(KEY, theme)
+    }
   } catch {
     // Storage blocked (e.g. private mode): the choice lasts for this page only.
   }

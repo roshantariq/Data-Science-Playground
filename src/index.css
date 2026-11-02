@@ -1,21 +1,22 @@
-/* Design tokens. Values come from the Design rules in the project plan.
-   Light is the base; dark applies from the system setting unless the
-   toggle has set data-theme on <html>. */
+/* Design tokens from the Design Brief: light-dark(light value, dark value).
+   The mode follows the system unless the theme switch sets data-theme. */
 :root {
-  --bg: #fff8ec;
-  --surface: #ffffff;
-  --text: #073b4c;
-  --text-muted: #3f5c66;
-  --grid: #ecd29b;
-  --action: #0e7194;
-  --on-action: #ffffff;
-  --machines: #06d6a0;
-  --on-machines: #073b4c;
-  --machines-mark: #06a37a;
-  --feel: #ffd166;
-  --on-feel: #073b4c;
-  --feel-mark: #a67c00;
-  --point: #073b4c;
+  color-scheme: light dark;
+
+  --bg: light-dark(#fff8ec, #101518);
+  --surface: light-dark(#ffffff, #151c20);
+  --text: light-dark(#073b4c, #e6ecef);
+  --text-muted: light-dark(#3f5c66, #93a1a8);
+  --grid: light-dark(#ecd29b, #222c31);
+  --action: light-dark(#0e7194, #5cc8f2);
+  --on-action: light-dark(#ffffff, #101518);
+  --machines: light-dark(#06d6a0, #4fc3ad);
+  --on-machines: light-dark(#073b4c, #101518);
+  --machines-mark: light-dark(#06a37a, #4fc3ad);
+  --feel: light-dark(#ffd166, #f2b544);
+  --on-feel: light-dark(#073b4c, #101518);
+  --feel-mark: light-dark(#a67c00, #f2b544);
+  --point: light-dark(#073b4c, #e6ecef);
 
   --font-display: 'Unbounded', system-ui, sans-serif;
   --font-body: 'IBM Plex Sans', system-ui, sans-serif;
@@ -25,45 +26,13 @@
   --text-xl: 1.75rem;
   --text-display: clamp(2.25rem, 5vw, 3.5rem);
   --radius: 2px;
+}
 
+:root[data-theme='light'] {
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #101518;
-    --surface: #151c20;
-    --text: #e6ecef;
-    --text-muted: #93a1a8;
-    --grid: #222c31;
-    --action: #5cc8f2;
-    --on-action: #101518;
-    --machines: #4fc3ad;
-    --on-machines: #101518;
-    --machines-mark: #4fc3ad;
-    --feel: #f2b544;
-    --on-feel: #101518;
-    --feel-mark: #f2b544;
-    --point: #e6ecef;
-    color-scheme: dark;
-  }
-}
-
 :root[data-theme='dark'] {
-  --bg: #101518;
-  --surface: #151c20;
-  --text: #e6ecef;
-  --text-muted: #93a1a8;
-  --grid: #222c31;
-  --action: #5cc8f2;
-  --on-action: #101518;
-  --machines: #4fc3ad;
-  --on-machines: #101518;
-  --machines-mark: #4fc3ad;
-  --feel: #f2b544;
-  --on-feel: #101518;
-  --feel-mark: #f2b544;
-  --point: #e6ecef;
   color-scheme: dark;
 }
 
