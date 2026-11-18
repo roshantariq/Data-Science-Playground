@@ -1,6 +1,7 @@
 export function Privacy() {
   return (
     <article className="prose">
+      <title>Privacy – Data Science Playground</title>
       <h1>Privacy</h1>
       <p>
         This site has no accounts and no server that stores your data.

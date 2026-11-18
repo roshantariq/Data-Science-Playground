@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 export function About() {
   return (
     <article className="prose">
+      <title>About – Data Science Playground</title>
       <h1>About</h1>
       <p>
         Data Science Playground is a set of interactive exhibits about how

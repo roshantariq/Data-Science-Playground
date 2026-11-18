@@ -12,6 +12,7 @@ export function Exhibit() {
 
   return (
     <article className={`exhibit wing-${exhibit.wing}`}>
+      <title>{`${exhibit.title} – Data Science Playground`}</title>
       <Link className="crumb" to={`/${exhibit.wing}`}>
         {wingTitle}
       </Link>
