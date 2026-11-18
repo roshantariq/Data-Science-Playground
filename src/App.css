@@ -203,7 +203,7 @@ p {
   gap: 12px;
 }
 
-.point-area svg {
+.point-area > svg {
   display: block;
   /* At most half the window tall, so the controls below stay on screen. */
   width: min(100%, 50svh * 5 / 3);
@@ -218,7 +218,24 @@ p {
 
 .point-area circle {
   fill: var(--point);
+}
+
+.point-area > svg circle {
   cursor: grab;
+}
+
+/* Test points: hollow rings in a second colour, so shape alone tells them apart. */
+.point-area circle.test {
+  fill: var(--surface);
+  stroke: var(--feel-mark);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.point-area .mark {
+  width: 0.8em;
+  height: 0.8em;
+  vertical-align: -0.05em;
 }
 
 .point-area .curve {
@@ -246,6 +263,10 @@ p {
 .point-controls p,
 .degree-note {
   color: var(--text-muted);
+}
+
+.point-controls p {
+  white-space: nowrap;
 }
 
 .point-controls label {

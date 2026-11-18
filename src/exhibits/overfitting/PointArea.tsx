@@ -6,11 +6,19 @@ import {
   HEIGHT,
   MAX_POINTS,
   movePoint,
+  newSplit,
   pointAt,
   randomPoints,
   removePoint,
+  type Sample,
   WIDTH,
 } from './points.ts'
+
+const Mark = ({ test }: { test: boolean }) => (
+  <svg className="mark" viewBox="0 0 12 12" aria-hidden="true">
+    <circle className={test ? 'test' : undefined} cx="6" cy="6" r="4" />
+  </svg>
+)
 
 const DRAG_START_PX = 6
 const KEY_STEP = 10
@@ -24,24 +32,27 @@ type Gesture = {
 }
 
 export function PointArea() {
-  const [points, setPoints] = useState<Point[]>(() => randomPoints())
+  const [points, setPoints] = useState<Sample[]>(() => randomPoints())
   const [message, setMessage] = useState('')
   const [scale, setScale] = useState(1) // grid units per CSS pixel
   const svg = useRef<SVGSVGElement>(null)
   const gesture = useRef<Gesture | null>(null)
   const [degree, setDegree] = useState(1)
   const sliderId = useId()
-  // The slider stops at what the points can support; the chosen degree
-  // comes back once there are enough points again.
-  const cap = maxDegree(points)
+  // The curve is fitted to training points only; test points are hidden
+  // from it. The slider stops at what the training points can support, and
+  // the chosen degree comes back once there are enough points again.
+  const training = useMemo(() => points.filter((p) => !p.test), [points])
+  const tests = points.length - training.length
+  const cap = maxDegree(training)
   const shown = Math.max(1, Math.min(degree, cap))
   const curve = useMemo(() => {
     if (cap < 1) return ''
-    const line = curvePoints(fitPolynomial(points, shown))
+    const line = curvePoints(fitPolynomial(training, shown))
     return (
       'M' + line.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('L')
     )
-  }, [points, shown, cap])
+  }, [training, shown, cap])
 
   useEffect(() => {
     const el = svg.current!
@@ -148,8 +159,9 @@ export function PointArea() {
             cx={p.x}
             cy={p.y}
             r={6 * scale}
+            className={p.test ? 'test' : undefined}
             tabIndex={0}
-            aria-label={`Point ${i + 1}. Arrow keys move it, Delete removes it.`}
+            aria-label={`${p.test ? 'Test' : 'Training'} point ${i + 1}. Arrow keys move it, Delete removes it.`}
             onKeyDown={(e) => onKeyDown(e, i)}
           />
         ))}
@@ -183,15 +195,20 @@ export function PointArea() {
         >
           Clear
         </button>
+        <button type="button" onClick={() => setPoints(newSplit(points))}>
+          New split
+        </button>
         <p aria-live="polite">
-          {points.length} of {MAX_POINTS} points{message && `. ${message}`}
+          <Mark test={false} /> {training.length} training, <Mark test={true} />{' '}
+          {tests} test ({points.length} of {MAX_POINTS})
+          {message && `. ${message}`}
         </p>
       </div>
       {cap < 20 && (
         <p className="degree-note">
           {cap < 1
-            ? 'Add at least 2 points to draw a curve.'
-            : `${cap + 1} points allow up to degree ${cap}. Add points to go higher.`}
+            ? 'Needs at least 2 training points to draw a curve. Add points.'
+            : `${cap + 1} training points allow up to degree ${cap}. Add points to go higher.`}
         </p>
       )}
     </div>

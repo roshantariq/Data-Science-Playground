@@ -4,23 +4,50 @@ import type { Point } from './fit.ts'
 export const WIDTH = 1000
 export const HEIGHT = 600
 export const MAX_POINTS = 60
+const TEST_SHARE = 0.3
+
+/** A point plus its group: test points are hidden from the fit. */
+export type Sample = Point & { test: boolean }
 
 const clamp = (v: number, max: number) => Math.min(max, Math.max(0, v))
 const inside = (p: Point): Point => ({
   x: clamp(p.x, WIDTH),
   y: clamp(p.y, HEIGHT),
 })
+/** Test points for n points: 30%, rounded down so training fills first. */
+const testTarget = (n: number) => Math.floor(n * TEST_SHARE)
 
-export function addPoint(points: Point[], p: Point): Point[] {
-  return points.length >= MAX_POINTS ? points : [...points, inside(p)]
+/** Adds a point to whichever group keeps the mix closest to 70/30. */
+export function addPoint(points: Sample[], p: Point): Sample[] {
+  if (points.length >= MAX_POINTS) return points
+  const tests = points.filter((q) => q.test).length
+  const test = tests < testTarget(points.length + 1)
+  return [...points, { ...inside(p), test }]
 }
 
-export function removePoint(points: Point[], index: number): Point[] {
+export function removePoint(points: Sample[], index: number): Sample[] {
   return points.filter((_, i) => i !== index)
 }
 
-export function movePoint(points: Point[], index: number, p: Point): Point[] {
-  return points.map((q, i) => (i === index ? inside(p) : q))
+/** Moving never changes a point's group, so colours don't flicker. */
+export function movePoint(points: Sample[], index: number, p: Point): Sample[] {
+  return points.map((q, i) =>
+    i === index ? { ...inside(p), test: q.test } : q,
+  )
+}
+
+/** Reshuffles which points are test points, keeping the 30% mix. */
+export function newSplit(
+  points: Point[],
+  rand: () => number = Math.random,
+): Sample[] {
+  const order = points.map((_, i) => i)
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1))
+    ;[order[i], order[j]] = [order[j], order[i]]
+  }
+  const test = new Set(order.slice(0, testTarget(points.length)))
+  return points.map(({ x, y }, i) => ({ x, y, test: test.has(i) }))
 }
 
 /** Index of the nearest point within radius, or -1. */
@@ -50,7 +77,7 @@ export function curvePoints(
  * time: the shape (a mix of waves, bumps and a slope), the point count,
  * their positions and how noisy they are.
  */
-export function randomPoints(rand: () => number = Math.random): Point[] {
+export function randomPoints(rand: () => number = Math.random): Sample[] {
   const between = (a: number, b: number) => a + rand() * (b - a)
   const parts: ((t: number) => number)[] = [(t) => between(-1, 1) * t]
   const extra = 1 + Math.floor(rand() * 3)
@@ -74,7 +101,7 @@ export function randomPoints(rand: () => number = Math.random): Point[] {
   const span = Math.max(...shape) - low || 1
   const noise = between(0.03, 0.12) * HEIGHT
   const margin = 40
-  return ts.map((t, i) => {
+  const points = ts.map((t, i) => {
     // Box-Muller: normally distributed noise.
     const gauss =
       Math.sqrt(-2 * Math.log(1 - rand())) * Math.cos(2 * Math.PI * rand())
@@ -84,4 +111,5 @@ export function randomPoints(rand: () => number = Math.random): Point[] {
       y: y + noise * gauss,
     })
   })
+  return newSplit(points, rand)
 }
