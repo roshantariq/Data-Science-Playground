@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { ErrorChart } from './ErrorChart.tsx'
 import { errorCurve } from './errors.ts'
 import { fitPolynomial, maxDegree, type Point } from './fit.ts'
+import { judge, message as verdictText } from './spot.ts'
 import {
   addPoint,
   curvePoints,
@@ -39,6 +40,7 @@ export function PointArea() {
   const [scale, setScale] = useState(1) // grid units per CSS pixel
   const svg = useRef<SVGSVGElement>(null)
   const gesture = useRef<Gesture | null>(null)
+  const result = useRef<HTMLParagraphElement>(null)
   const [degree, setDegree] = useState(1)
   const sliderId = useId()
   // The curve is fitted to training points only; test points are hidden
@@ -56,6 +58,17 @@ export function PointArea() {
     )
   }, [training, shown, cap])
   const errors = useMemo(() => errorCurve(points, cap), [points, cap])
+  // A Check answers for these exact points and degree; any change hides it.
+  const [checked, setChecked] = useState<{
+    points: Sample[]
+    degree: number
+  } | null>(null)
+  const canCheck = judge(errors, shown) !== null
+  const verdict =
+    checked?.points === points && checked.degree === shown
+      ? judge(errors, shown)
+      : null
+  const said = verdict && verdictText(verdict)
 
   useEffect(() => {
     const el = svg.current!
@@ -145,6 +158,10 @@ export function PointArea() {
 
   return (
     <div className="point-area">
+      <p className="spot-prompt">
+        <b>Where does it go wrong?</b> Slide to where the curve starts chasing
+        the wobble instead of the shape, then press <b>Check</b>.
+      </p>
       <svg
         ref={svg}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -169,7 +186,7 @@ export function PointArea() {
           />
         ))}
       </svg>
-      <ErrorChart rows={errors} degree={shown} />
+      <ErrorChart rows={errors} degree={shown} best={verdict?.best} />
       <div className="point-controls">
         <label htmlFor={sliderId}>Degree {cap >= 1 ? shown : '–'}</label>
         <input
@@ -181,6 +198,19 @@ export function PointArea() {
           disabled={cap < 1}
           onChange={(e) => setDegree(Number(e.target.value))}
         />
+        <button
+          type="button"
+          disabled={!canCheck}
+          onClick={() => {
+            setChecked({ points, degree: shown })
+            // On short screens the answer lands below the fold; bring it up.
+            requestAnimationFrame(() =>
+              result.current?.scrollIntoView({ block: 'nearest' }),
+            )
+          }}
+        >
+          Check
+        </button>
         <button
           type="button"
           onClick={() => {
@@ -208,6 +238,13 @@ export function PointArea() {
           {message && `. ${message}`}
         </p>
       </div>
+      <p ref={result} className="spot-result" aria-live="polite">
+        {said && (
+          <>
+            <b>{said.title}</b> {said.text}
+          </>
+        )}
+      </p>
       {cap < 20 && (
         <p className="degree-note">
           {cap < 1

@@ -199,17 +199,29 @@ p {
 }
 
 /* Phones: points, controls, then the chart. Wider: points and chart side
-   by side, each at most 46% of the window tall so the controls stay on screen. */
+   by side, each at most 46% of the window tall (38% on short windows) so the
+   controls stay on screen; the rows below use the full width. */
 .point-area {
+  --plot-height: 46svh;
   display: grid;
   gap: 12px;
-  grid-template-areas: 'plot' 'controls' 'note' 'chart';
+  grid-template-areas: 'prompt' 'plot' 'controls' 'result' 'note' 'chart';
+}
+
+@media (max-height: 650px) {
+  .point-area {
+    --plot-height: 38svh;
+  }
 }
 
 @media (min-width: 700px) {
   .point-area {
-    grid-template-columns: repeat(2, minmax(0, calc(46svh * 5 / 3)));
-    grid-template-areas: 'plot chart' 'controls controls' 'note note';
+    grid-template-columns:
+      repeat(2, minmax(0, calc(var(--plot-height) * 5 / 3)))
+      1fr;
+    grid-template-areas:
+      'prompt prompt prompt' 'plot chart .' 'controls controls controls'
+      'result result result' 'note note note';
     align-items: end;
   }
 }
@@ -337,6 +349,11 @@ p {
   gap: 12px;
 }
 
+.point-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .point-controls p,
 .degree-note {
   color: var(--text-muted);
@@ -348,6 +365,21 @@ p {
 
 .degree-note {
   grid-area: note;
+}
+
+.spot-prompt {
+  grid-area: prompt;
+}
+
+.spot-result {
+  grid-area: result;
+  max-width: 80ch;
+}
+
+.error-chart .best {
+  fill: none;
+  stroke: var(--action);
+  stroke-width: 3px;
 }
 
 .point-controls label {

@@ -33,9 +33,11 @@ function describe(rows: ErrorRow[], degree: number): string {
 export function ErrorChart({
   rows,
   degree,
+  best,
 }: {
   rows: ErrorRow[]
   degree: number
+  best?: number // shown only after Check: the lowest test error
 }) {
   const [log, setLog] = useState(false)
   const switchId = useId()
@@ -70,7 +72,10 @@ export function ErrorChart({
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label={describe(rows, degree)}
+        aria-label={
+          describe(rows, degree) +
+          (best ? ` Test error is lowest at degree ${best}.` : '')
+        }
       >
         <line className="axis" x1={LEFT} y1={BOTTOM} x2={RIGHT} y2={BOTTOM} />
         {[1, 5, 10, 15, 20].map((d) => (
@@ -117,6 +122,14 @@ export function ErrorChart({
               r={4}
             />
           ),
+        )}
+        {best && tests.length > 0 && (
+          <circle
+            className="best"
+            cx={x(best)}
+            cy={Math.max(y(tests[best - 1]), TOP)}
+            r={10}
+          />
         )}
       </svg>
     </figure>
