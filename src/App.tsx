@@ -29,17 +29,17 @@ function App() {
         <nav>
           <Link to="/machines">{WINGS.machines.title}</Link>
           <Link to="/feel">{WINGS.feel.title}</Link>
-          <button
-            type="button"
-            className="theme-toggle"
-            onClick={() => {
-              setTheme(next)
-              setThemeState(next)
-            }}
-          >
-            Theme: {LABEL[theme]}
-          </button>
         </nav>
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={() => {
+            setTheme(next)
+            setThemeState(next)
+          }}
+        >
+          Theme: {LABEL[theme]}
+        </button>
       </header>
       <main>
         <Outlet />

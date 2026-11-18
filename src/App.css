@@ -15,8 +15,32 @@ a {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: 12px 20px;
   padding-block: 16px;
+}
+
+/* Phones: site name and a smaller theme button on one row, links below. */
+@media (max-width: 699px) {
+  .site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+  }
+
+  .site-name {
+    font-size: var(--text-sm);
+  }
+
+  header.site-header nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+  }
+
+  .site-header .theme-toggle {
+    padding: 4px 8px;
+    font-size: var(--text-sm);
+  }
 }
 
 .site-name {
@@ -30,9 +54,11 @@ a {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px 20px;
+  margin-left: auto;
 }
 
-.theme-toggle {
+.theme-toggle,
+.point-controls button {
   font: inherit;
   font-weight: 600;
   padding: 8px 16px;
@@ -197,6 +223,224 @@ p {
   color: var(--text-muted);
 }
 
+/* Phones: points, controls, then the chart. Wider: points and chart side
+   by side, each at most 46% of the window tall (38% on short windows) so the
+   controls stay on screen; the rows below use the full width. */
+.point-area {
+  --plot-height: 46svh;
+  display: grid;
+  gap: 12px;
+  grid-template-areas: 'prompt' 'plot' 'controls' 'result' 'note' 'chart';
+}
+
+@media (max-height: 650px) {
+  .point-area {
+    --plot-height: 38svh;
+  }
+}
+
+@media (min-width: 700px) {
+  .point-area {
+    grid-template-columns:
+      repeat(2, minmax(0, calc(var(--plot-height) * 5 / 3)))
+      1fr;
+    grid-template-areas:
+      'prompt prompt prompt' 'plot chart .' 'controls controls controls'
+      'result result result' 'note note note';
+    align-items: end;
+  }
+}
+
+.point-area > svg {
+  grid-area: plot;
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.point-area circle {
+  fill: var(--point);
+}
+
+.point-area > svg circle {
+  cursor: grab;
+}
+
+/* Test points: hollow rings in a second colour, so shape alone tells them apart. */
+.point-area circle.test {
+  fill: var(--surface);
+  stroke: var(--feel-mark);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.point-area .mark {
+  width: 0.8em;
+  height: 0.8em;
+  vertical-align: -0.05em;
+}
+
+.point-area .curve {
+  fill: none;
+  stroke: var(--machines-mark);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.point-area circle:focus-visible {
+  outline: none;
+  stroke: var(--action);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+}
+
+.error-chart {
+  grid-area: chart;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.error-chart figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.error-chart label {
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.error-chart svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+}
+
+.error-chart .axis {
+  stroke: var(--grid);
+}
+
+.error-chart text {
+  fill: var(--text-muted);
+  font: 16px var(--font-body);
+}
+
+.error-chart path.train,
+.error-chart path.test {
+  fill: none;
+  stroke-width: 2.5px;
+}
+
+.error-chart path.train {
+  stroke: var(--point);
+}
+
+.error-chart path.test {
+  stroke: var(--feel-mark);
+}
+
+.error-chart path.test.off {
+  fill: var(--feel-mark);
+  stroke: none;
+}
+
+.error-chart .now {
+  stroke: var(--action);
+  stroke-width: 2px;
+  stroke-dasharray: 4 4;
+}
+
+.point-controls {
+  grid-area: controls;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Wider screens: the buttons sit in the controls row as if unwrapped. */
+.point-buttons {
+  display: contents;
+}
+
+/* Phones: smaller buttons, together on a row of their own. */
+@media (max-width: 699px) {
+  .point-controls {
+    gap: 8px;
+  }
+
+  .point-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-basis: 100%;
+  }
+
+  .point-controls button {
+    padding: 6px 10px;
+    font-size: var(--text-sm);
+  }
+}
+
+.point-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.point-controls p,
+.degree-note {
+  color: var(--text-muted);
+}
+
+.point-controls p {
+  white-space: nowrap;
+}
+
+.degree-note {
+  grid-area: note;
+}
+
+.spot-prompt {
+  grid-area: prompt;
+}
+
+.spot-result {
+  grid-area: result;
+  max-width: 80ch;
+}
+
+.error-chart .best {
+  fill: none;
+  stroke: var(--action);
+  stroke-width: 3px;
+}
+
+.point-controls label {
+  font-weight: 600;
+  min-width: 6.5em;
+}
+
+.point-controls input[type='range'] {
+  flex: 1 1 160px;
+  accent-color: var(--action);
+}
+
 .panel {
   display: grid;
   gap: 6px;
@@ -209,6 +453,49 @@ p {
 
 .panel h2 {
   font-size: var(--text-base);
+}
+
+/* "Show more" exists for phones only; wider screens show everything. */
+.show-more {
+  display: none;
+  justify-self: start;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--action);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 699px) {
+  .show-more {
+    display: inline-block;
+  }
+
+  .phone-hidden {
+    display: none;
+  }
+}
+
+/* Side by side when there is room, stacked on phones. */
+.panels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.panels .panel {
+  flex: 1 1 320px;
+  align-content: start;
+}
+
+.panel ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.2em;
 }
 
 .wing-strip {
