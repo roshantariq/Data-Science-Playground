@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { Description } from '../components/Description.tsx'
 import { EXHIBITS, WINGS, wingExhibits } from '../exhibits.ts'
+import { PointArea } from '../exhibits/overfitting/PointArea.tsx'
 import { NotFound } from './NotFound.tsx'
 
 export function Exhibit() {
@@ -19,7 +20,11 @@ export function Exhibit() {
         {wingTitle}
       </Link>
       <h1>{exhibit.title}</h1>
-      <div className="placeholder">The exhibit goes here</div>
+      {exhibit.slug === 'overfitting' ? (
+        <PointArea />
+      ) : (
+        <div className="placeholder">The exhibit goes here</div>
+      )}
       <section className="panel">
         <h2>What just happened</h2>
         <p>

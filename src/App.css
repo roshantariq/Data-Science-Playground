@@ -32,7 +32,8 @@ a {
   gap: 8px 20px;
 }
 
-.theme-toggle {
+.theme-toggle,
+.point-controls button {
   font: inherit;
   font-weight: 600;
   padding: 8px 16px;
@@ -194,6 +195,46 @@ p {
 }
 
 .crumb {
+  color: var(--text-muted);
+}
+
+.point-area {
+  display: grid;
+  gap: 12px;
+}
+
+.point-area svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.point-area circle {
+  fill: var(--point);
+  cursor: grab;
+}
+
+.point-area circle:focus-visible {
+  outline: none;
+  stroke: var(--action);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+}
+
+.point-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.point-controls p {
   color: var(--text-muted);
 }
 
