@@ -455,6 +455,30 @@ p {
   font-size: var(--text-base);
 }
 
+/* "Show more" exists for phones only; wider screens show everything. */
+.show-more {
+  display: none;
+  justify-self: start;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--action);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 699px) {
+  .show-more {
+    display: inline-block;
+  }
+
+  .phone-hidden {
+    display: none;
+  }
+}
+
 /* Side by side when there is room, stacked on phones. */
 .panels {
   display: flex;
