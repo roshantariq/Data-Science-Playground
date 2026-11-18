@@ -1,4 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { ErrorChart } from './ErrorChart.tsx'
+import { errorCurve } from './errors.ts'
 import { fitPolynomial, maxDegree, type Point } from './fit.ts'
 import {
   addPoint,
@@ -53,6 +55,7 @@ export function PointArea() {
       'M' + line.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('L')
     )
   }, [training, shown, cap])
+  const errors = useMemo(() => errorCurve(points, cap), [points, cap])
 
   useEffect(() => {
     const el = svg.current!
@@ -166,6 +169,7 @@ export function PointArea() {
           />
         ))}
       </svg>
+      <ErrorChart rows={errors} degree={shown} />
       <div className="point-controls">
         <label htmlFor={sliderId}>Degree {cap >= 1 ? shown : '–'}</label>
         <input

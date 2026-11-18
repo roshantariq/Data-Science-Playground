@@ -198,15 +198,26 @@ p {
   color: var(--text-muted);
 }
 
+/* Phones: points, controls, then the chart. Wider: points and chart side
+   by side, each at most 46% of the window tall so the controls stay on screen. */
 .point-area {
   display: grid;
   gap: 12px;
+  grid-template-areas: 'plot' 'controls' 'note' 'chart';
+}
+
+@media (min-width: 700px) {
+  .point-area {
+    grid-template-columns: repeat(2, minmax(0, calc(46svh * 5 / 3)));
+    grid-template-areas: 'plot chart' 'controls controls' 'note note';
+    align-items: end;
+  }
 }
 
 .point-area > svg {
+  grid-area: plot;
   display: block;
-  /* At most half the window tall, so the controls below stay on screen. */
-  width: min(100%, 50svh * 5 / 3);
+  width: 100%;
   aspect-ratio: 5 / 3;
   background: var(--surface);
   border: 1px solid var(--grid);
@@ -253,7 +264,73 @@ p {
   vector-effect: non-scaling-stroke;
 }
 
+.error-chart {
+  grid-area: chart;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.error-chart figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.error-chart label {
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.error-chart svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+}
+
+.error-chart .axis {
+  stroke: var(--grid);
+}
+
+.error-chart text {
+  fill: var(--text-muted);
+  font: 16px var(--font-body);
+}
+
+.error-chart path.train,
+.error-chart path.test {
+  fill: none;
+  stroke-width: 2.5px;
+}
+
+.error-chart path.train {
+  stroke: var(--point);
+}
+
+.error-chart path.test {
+  stroke: var(--feel-mark);
+}
+
+.error-chart path.test.off {
+  fill: var(--feel-mark);
+  stroke: none;
+}
+
+.error-chart .now {
+  stroke: var(--action);
+  stroke-width: 2px;
+  stroke-dasharray: 4 4;
+}
+
 .point-controls {
+  grid-area: controls;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -267,6 +344,10 @@ p {
 
 .point-controls p {
   white-space: nowrap;
+}
+
+.degree-note {
+  grid-area: note;
 }
 
 .point-controls label {
