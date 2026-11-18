@@ -205,7 +205,8 @@ p {
 
 .point-area svg {
   display: block;
-  width: 100%;
+  /* At most half the window tall, so the controls below stay on screen. */
+  width: min(100%, 50svh * 5 / 3);
   aspect-ratio: 5 / 3;
   background: var(--surface);
   border: 1px solid var(--grid);
