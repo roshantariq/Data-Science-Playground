@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   addPoint,
+  curvePoints,
   HEIGHT,
   MAX_POINTS,
   movePoint,
@@ -47,6 +48,20 @@ describe('editing points', () => {
     ]
     expect(pointAt(points, { x: 108, y: 101 }, 20)).toBe(1)
     expect(pointAt(points, { x: 300, y: 300 }, 20)).toBe(-1)
+  })
+})
+
+describe('curvePoints', () => {
+  test('samples the curve across the full width', () => {
+    const line = curvePoints((x) => x / 2, 11)
+    expect(line).toHaveLength(11)
+    expect(line[0]).toEqual({ x: 0, y: 0 })
+    expect(line[10]).toEqual({ x: WIDTH, y: WIDTH / 2 })
+  })
+
+  test('keeps runaway values near the area so the drawing stays sane', () => {
+    const line = curvePoints((x) => (x - 500) ** 9, 21)
+    expect(line.every((p) => p.y >= -HEIGHT && p.y <= 2 * HEIGHT)).toBe(true)
   })
 })
 

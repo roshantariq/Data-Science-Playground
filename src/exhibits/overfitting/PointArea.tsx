@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import type { Point } from './fit.ts'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { fitPolynomial, maxDegree, type Point } from './fit.ts'
 import {
   addPoint,
+  curvePoints,
   HEIGHT,
   MAX_POINTS,
   movePoint,
@@ -28,6 +29,19 @@ export function PointArea() {
   const [scale, setScale] = useState(1) // grid units per CSS pixel
   const svg = useRef<SVGSVGElement>(null)
   const gesture = useRef<Gesture | null>(null)
+  const [degree, setDegree] = useState(1)
+  const sliderId = useId()
+  // The slider stops at what the points can support; the chosen degree
+  // comes back once there are enough points again.
+  const cap = maxDegree(points)
+  const shown = Math.max(1, Math.min(degree, cap))
+  const curve = useMemo(() => {
+    if (cap < 1) return ''
+    const line = curvePoints(fitPolynomial(points, shown))
+    return (
+      'M' + line.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join('L')
+    )
+  }, [points, shown, cap])
 
   useEffect(() => {
     const el = svg.current!
@@ -127,6 +141,7 @@ export function PointArea() {
         onPointerUp={onPointerUp}
         onPointerCancel={() => (gesture.current = null)}
       >
+        {curve && <path className="curve" d={curve} />}
         {points.map((p, i) => (
           <circle
             key={i}
@@ -140,6 +155,16 @@ export function PointArea() {
         ))}
       </svg>
       <div className="point-controls">
+        <label htmlFor={sliderId}>Degree {cap >= 1 ? shown : '–'}</label>
+        <input
+          id={sliderId}
+          type="range"
+          min={1}
+          max={Math.max(1, cap)}
+          value={shown}
+          disabled={cap < 1}
+          onChange={(e) => setDegree(Number(e.target.value))}
+        />
         <button
           type="button"
           onClick={() => {
@@ -162,6 +187,13 @@ export function PointArea() {
           {points.length} of {MAX_POINTS} points{message && `. ${message}`}
         </p>
       </div>
+      {cap < 20 && (
+        <p className="degree-note">
+          {cap < 1
+            ? 'Add at least 2 points to draw a curve.'
+            : `${cap + 1} points allow up to degree ${cap}. Add points to go higher.`}
+        </p>
+      )}
     </div>
   )
 }

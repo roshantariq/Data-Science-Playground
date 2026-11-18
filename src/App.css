@@ -221,6 +221,14 @@ p {
   cursor: grab;
 }
 
+.point-area .curve {
+  fill: none;
+  stroke: var(--machines-mark);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
 .point-area circle:focus-visible {
   outline: none;
   stroke: var(--action);
@@ -235,8 +243,19 @@ p {
   gap: 12px;
 }
 
-.point-controls p {
+.point-controls p,
+.degree-note {
   color: var(--text-muted);
+}
+
+.point-controls label {
+  font-weight: 600;
+  min-width: 6.5em;
+}
+
+.point-controls input[type='range'] {
+  flex: 1 1 160px;
+  accent-color: var(--action);
 }
 
 .panel {

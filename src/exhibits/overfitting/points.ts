@@ -34,6 +34,17 @@ export function pointAt(points: Point[], p: Point, radius: number): number {
   return best
 }
 
+/** Samples a curve across the full width for drawing; runaway values are capped. */
+export function curvePoints(
+  predict: (x: number) => number,
+  samples = 200,
+): Point[] {
+  return Array.from({ length: samples }, (_, i) => {
+    const x = (i / (samples - 1)) * WIDTH
+    return { x, y: Math.min(2 * HEIGHT, Math.max(-HEIGHT, predict(x))) }
+  })
+}
+
 /**
  * 20 to 40 noisy points around a hidden shape. Everything is random each
  * time: the shape (a mix of waves, bumps and a slope), the point count,
