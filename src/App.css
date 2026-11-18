@@ -406,6 +406,25 @@ p {
   font-size: var(--text-base);
 }
 
+/* Side by side when there is room, stacked on phones. */
+.panels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.panels .panel {
+  flex: 1 1 320px;
+  align-content: start;
+}
+
+.panel ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.2em;
+}
+
 .wing-strip {
   display: grid;
   gap: 12px;

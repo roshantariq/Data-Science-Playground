@@ -1,3 +1,29 @@
+export function TryThis() {
+  return (
+    <section className="panel">
+      <h2>Try this</h2>
+      <ul>
+        <li>
+          Press <b>Clear</b> and click 5 dots in a rough line. Then turn the
+          degree up. What does the curve do between the dots?
+        </li>
+        <li>
+          Press <b>New split</b> a few times and <b>Check</b> each time. Does
+          the best degree move?
+        </li>
+        <li>
+          Slide to the highest degree and turn on <b>Log scale</b>. How far does
+          the test line climb?
+        </li>
+        <li>
+          Drag one training dot far away from the rest. Does the best degree go
+          up or down?
+        </li>
+      </ul>
+    </section>
+  )
+}
+
 export function Explainer() {
   return (
     <>

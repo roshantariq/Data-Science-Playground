@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { Description } from '../components/Description.tsx'
 import { EXHIBITS, WINGS, wingExhibits } from '../exhibits.ts'
-import { Explainer } from '../exhibits/overfitting/Explainer.tsx'
+import { Explainer, TryThis } from '../exhibits/overfitting/Explainer.tsx'
 import { PointArea } from '../exhibits/overfitting/PointArea.tsx'
 import { NotFound } from './NotFound.tsx'
 
@@ -26,16 +26,20 @@ export function Exhibit() {
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
-      <section className="panel">
-        <h2>What just happened</h2>
-        {exhibit.slug === 'overfitting' ? (
-          <Explainer />
-        ) : (
-          <p>
-            Explains the idea in one paragraph once you have tried the exhibit.
-          </p>
-        )}
-      </section>
+      <div className="panels">
+        <section className="panel">
+          <h2>What just happened</h2>
+          {exhibit.slug === 'overfitting' ? (
+            <Explainer />
+          ) : (
+            <p>
+              Explains the idea in one paragraph once you have tried the
+              exhibit.
+            </p>
+          )}
+        </section>
+        {exhibit.slug === 'overfitting' && <TryThis />}
+      </div>
       <nav className="wing-strip" aria-label={`Exhibits in ${wingTitle}`}>
         <Link to={`/${exhibit.wing}`}>Back to {wingTitle}</Link>
         <ol>
