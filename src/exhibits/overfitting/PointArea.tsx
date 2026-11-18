@@ -198,40 +198,42 @@ export function PointArea() {
           disabled={cap < 1}
           onChange={(e) => setDegree(Number(e.target.value))}
         />
-        <button
-          type="button"
-          disabled={!canCheck}
-          onClick={() => {
-            setChecked({ points, degree: shown })
-            // On short screens the answer lands below the fold; bring it up.
-            requestAnimationFrame(() =>
-              result.current?.scrollIntoView({ block: 'nearest' }),
-            )
-          }}
-        >
-          Check
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setPoints(randomPoints())
-            setMessage('')
-          }}
-        >
-          Random data
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setPoints([])
-            setMessage('')
-          }}
-        >
-          Clear
-        </button>
-        <button type="button" onClick={() => setPoints(newSplit(points))}>
-          New split
-        </button>
+        <div className="point-buttons">
+          <button
+            type="button"
+            disabled={!canCheck}
+            onClick={() => {
+              setChecked({ points, degree: shown })
+              // On short screens the answer lands below the fold; bring it up.
+              requestAnimationFrame(() =>
+                result.current?.scrollIntoView({ block: 'nearest' }),
+              )
+            }}
+          >
+            Check
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPoints(randomPoints())
+              setMessage('')
+            }}
+          >
+            Random data
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setPoints([])
+              setMessage('')
+            }}
+          >
+            Clear
+          </button>
+          <button type="button" onClick={() => setPoints(newSplit(points))}>
+            New split
+          </button>
+        </div>
         <p aria-live="polite">
           <Mark test={false} /> {training.length} training, <Mark test={true} />{' '}
           {tests} test ({points.length} of {MAX_POINTS})

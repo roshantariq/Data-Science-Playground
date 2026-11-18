@@ -15,8 +15,32 @@ a {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: 12px 20px;
   padding-block: 16px;
+}
+
+/* Phones: site name and a smaller theme button on one row, links below. */
+@media (max-width: 699px) {
+  .site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+  }
+
+  .site-name {
+    font-size: var(--text-sm);
+  }
+
+  header.site-header nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+  }
+
+  .site-header .theme-toggle {
+    padding: 4px 8px;
+    font-size: var(--text-sm);
+  }
 }
 
 .site-name {
@@ -30,6 +54,7 @@ a {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px 20px;
+  margin-left: auto;
 }
 
 .theme-toggle,
@@ -347,6 +372,30 @@ p {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+}
+
+/* Wider screens: the buttons sit in the controls row as if unwrapped. */
+.point-buttons {
+  display: contents;
+}
+
+/* Phones: smaller buttons, together on a row of their own. */
+@media (max-width: 699px) {
+  .point-controls {
+    gap: 8px;
+  }
+
+  .point-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-basis: 100%;
+  }
+
+  .point-controls button {
+    padding: 6px 10px;
+    font-size: var(--text-sm);
+  }
 }
 
 .point-controls button:disabled {
