@@ -1,7 +1,10 @@
+import { Description } from '../components/Description.tsx'
+
 export function Privacy() {
   return (
     <article className="prose">
       <title>Privacy – Data Science Playground</title>
+      <Description text="What each exhibit does with your data. No accounts, no cookies, and nothing leaves your browser." />
       <h1>Privacy</h1>
       <p>
         This site has no accounts and no server that stores your data.

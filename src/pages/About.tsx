@@ -1,9 +1,11 @@
 import { Link } from 'react-router'
+import { Description } from '../components/Description.tsx'
 
 export function About() {
   return (
     <article className="prose">
       <title>About – Data Science Playground</title>
+      <Description text="Who made Data Science Playground, why it exists and how it's built." />
       <h1>About</h1>
       <p>
         Data Science Playground is a set of interactive exhibits about how

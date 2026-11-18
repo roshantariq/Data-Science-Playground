@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router'
+import { Description } from '../components/Description.tsx'
 import { EXHIBITS, WINGS, wingExhibits } from '../exhibits.ts'
 import { NotFound } from './NotFound.tsx'
 
@@ -13,6 +14,7 @@ export function Exhibit() {
   return (
     <article className={`exhibit wing-${exhibit.wing}`}>
       <title>{`${exhibit.title} – Data Science Playground`}</title>
+      <Description text={exhibit.line} />
       <Link className="crumb" to={`/${exhibit.wing}`}>
         {wingTitle}
       </Link>
