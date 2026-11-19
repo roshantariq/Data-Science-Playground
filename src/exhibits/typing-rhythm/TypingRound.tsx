@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { column, COLUMNS, level } from './meters.ts'
 import { Results } from './Results.tsx'
+import { coarse } from './samples.ts'
+import { Samples, type Reason } from './Samples.tsx'
 import { pickSentences } from './sentences.ts'
 import { roundStats, standing, type Key, type Sentence } from './stats.ts'
 
@@ -20,6 +22,10 @@ export function TypingRound() {
   const [typed, setTyped] = useState('')
   const [measured, setMeasured] = useState(false)
   const [started, setStarted] = useState(false) // focus the box only once someone picks
+  // Touch-only devices start on the sample typists; keystrokes can switch too.
+  const [unreliable, setUnreliable] = useState<Reason | null>(() =>
+    matchMedia('(any-pointer: fine)').matches ? null : 'touch',
+  )
   const input = useRef<HTMLInputElement>(null)
   // Key timings and letters stay in page memory only.
   const keys = useRef<Key[]>([])
@@ -83,6 +89,23 @@ export function TypingRound() {
     setStarted(true)
     input.current?.focus()
   }
+
+  if (unreliable)
+    return (
+      <div className="typing">
+        <Samples
+          reason={unreliable}
+          onType={
+            unreliable === 'touch'
+              ? () => {
+                  setUnreliable(null)
+                  start(round.length)
+                }
+              : undefined
+          }
+        />
+      </div>
+    )
 
   return (
     <div className="typing">
@@ -153,6 +176,9 @@ export function TypingRound() {
             onDrop={(e) => e.preventDefault()}
             onKeyDown={(e) => {
               if (e.repeat) return
+              // On-screen keyboards and input tools don't name the key.
+              if (e.key === 'Unidentified' || e.keyCode === 229)
+                return setUnreliable('keys')
               const name = keyName(e.key)
               if (!name) return void keys.current.push(null)
               const k = { key: name, down: e.timeStamp, up: NaN }
@@ -160,6 +186,12 @@ export function TypingRound() {
               kick(name, last ? k.down - last.down : null)
               keys.current.push(k)
               held.current.set(e.code, k)
+              // Check the clock once there are enough presses to tell.
+              const downs = [...done.flatMap((s) => s.keys), ...keys.current]
+                .filter((x) => x !== null)
+                .map((x) => x.down)
+              if (downs.length >= 12 && downs.length <= 40 && coarse(downs))
+                setUnreliable('timer')
             }}
             onChange={(e) => {
               const v = e.target.value

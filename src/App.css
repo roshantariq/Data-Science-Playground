@@ -456,6 +456,7 @@ p {
 
 .typing-bar [role='group'] {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   font-weight: 600;

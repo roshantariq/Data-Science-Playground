@@ -14,7 +14,7 @@ type Props = {
   sentences: Sentence[]
   stats: Stats
   standing: Stats
-  onAgain: () => void
+  onAgain?: () => void // left out for a sample typist: no best, no Try again
 }
 
 // Hexagon order, clockwise from the top; the first three make the score.
@@ -33,13 +33,14 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
   const plural = (n: number, one: string, many: string) =>
     `${n} ${n === 1 ? one : many}`
   const now = Math.round(score(standing))
-  const [prev] = useState(loadBest) // the best before this round
+  const sample = !onAgain
+  const [prev] = useState(() => (sample ? null : loadBest())) // the best before this round
   const better = !prev || now > Math.round(prev.score)
   const [kept] = useState(canSave)
   const [deleted, setDeleted] = useState(false)
   useEffect(() => {
-    if (better && kept) saveBest({ score: now, standing })
-  }, [better, kept, now, standing])
+    if (!sample && better && kept) saveBest({ score: now, standing })
+  }, [sample, better, kept, now, standing])
   const old = prev && Math.round(prev.score)
 
   return (
@@ -54,28 +55,30 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
               that's good at all three scores higher than one that's great at
               just one.
             </p>
-            <p className="best" aria-live="polite">
-              {deleted
-                ? 'Deleted. Nothing is saved now.'
-                : !kept
-                  ? "Your browser isn't letting this page save, so your best isn't kept."
-                  : !prev
-                    ? 'Saved as your best round so far.'
-                    : better
-                      ? `New best! Up from ${old}. The dashed outline is your old best.`
-                      : `Your best is ${old}, shown as the dashed outline.`}
-              {!deleted && kept && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    deleteBest()
-                    setDeleted(true)
-                  }}
-                >
-                  Delete my data
-                </button>
-              )}
-            </p>
+            {!sample && (
+              <p className="best" aria-live="polite">
+                {deleted
+                  ? 'Deleted. Nothing is saved now.'
+                  : !kept
+                    ? "Your browser isn't letting this page save, so your best isn't kept."
+                    : !prev
+                      ? 'Saved as your best round so far.'
+                      : better
+                        ? `New best! Up from ${old}. The dashed outline is your old best.`
+                        : `Your best is ${old}, shown as the dashed outline.`}
+                {!deleted && kept && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      deleteBest()
+                      setDeleted(true)
+                    }}
+                  >
+                    Delete my data
+                  </button>
+                )}
+              </p>
+            )}
           </section>
           <section>
             <h2>In your score</h2>
@@ -129,9 +132,11 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
       </div>
       <Timeline sentences={sentences} />
       <div className="results-end">
-        <button type="button" onClick={onAgain}>
-          Try again
-        </button>
+        {onAgain && (
+          <button type="button" onClick={onAgain}>
+            Try again
+          </button>
+        )}
         <p>
           Compared with 162,042 typists from the 136M Keystrokes study (Dhakal
           et al., CHI 2018).
