@@ -3,6 +3,10 @@ import { Description } from '../components/Description.tsx'
 import { EXHIBITS, WINGS, wingExhibits } from '../exhibits.ts'
 import { Explainer, TryThis } from '../exhibits/overfitting/Explainer.tsx'
 import { PointArea } from '../exhibits/overfitting/PointArea.tsx'
+import {
+  Explainer as TypingExplainer,
+  TryThis as TypingTryThis,
+} from '../exhibits/typing-rhythm/Explainer.tsx'
 import { TypingRound } from '../exhibits/typing-rhythm/TypingRound.tsx'
 import { NotFound } from './NotFound.tsx'
 
@@ -34,6 +38,8 @@ export function Exhibit() {
           <h2>What just happened</h2>
           {exhibit.slug === 'overfitting' ? (
             <Explainer />
+          ) : exhibit.slug === 'typing-rhythm' ? (
+            <TypingExplainer />
           ) : (
             <p>
               Explains the idea in one paragraph once you have tried the
@@ -42,6 +48,7 @@ export function Exhibit() {
           )}
         </section>
         {exhibit.slug === 'overfitting' && <TryThis />}
+        {exhibit.slug === 'typing-rhythm' && <TypingTryThis />}
       </div>
       <nav className="wing-strip" aria-label={`Exhibits in ${wingTitle}`}>
         <Link to={`/${exhibit.wing}`}>Back to {wingTitle}</Link>

@@ -31,6 +31,17 @@ export function About() {
         </a>{' '}
         under the MIT license.
       </p>
+      <h2>Data</h2>
+      <p>
+        Typing Rhythm compares your typing with the 136M Keystrokes dataset from
+        Aalto University: Vivek Dhakal, Anna Maria Feit, Per Ola Kristensson and
+        Antti Oulasvirta,{' '}
+        <a href="https://doi.org/10.1145/3173574.3174220">
+          "Observations on Typing from 136 Million Keystrokes"
+        </a>
+        , CHI 2018. It is used here for non-commercial purposes with credit, as
+        its licence asks.
+      </p>
       <h2>Your data</h2>
       <p>
         Everything runs in your browser, and nothing you type, draw or upload is
