@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { canSave, deleteBest, loadBest, saveBest } from './best.ts'
 import {
   bars,
   mistakes,
@@ -31,6 +32,15 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
   const p = (k: Stat) => <b>{pct(standing[k])}</b>
   const plural = (n: number, one: string, many: string) =>
     `${n} ${n === 1 ? one : many}`
+  const now = Math.round(score(standing))
+  const [prev] = useState(loadBest) // the best before this round
+  const better = !prev || now > Math.round(prev.score)
+  const [kept] = useState(canSave)
+  const [deleted, setDeleted] = useState(false)
+  useEffect(() => {
+    if (better && kept) saveBest({ score: now, standing })
+  }, [better, kept, now, standing])
+  const old = prev && Math.round(prev.score)
 
   return (
     <div className="results">
@@ -38,11 +48,33 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
         <div className="results-stats">
           <section>
             <h2>Rhythm score</h2>
-            <p className="score">{Math.round(score(standing))}</p>
+            <p className="score">{now}</p>
             <p>
               Made from Speed, Accuracy and Steadiness, out of 100. A round
               that's good at all three scores higher than one that's great at
               just one.
+            </p>
+            <p className="best" aria-live="polite">
+              {deleted
+                ? 'Deleted. Nothing is saved now.'
+                : !kept
+                  ? "Your browser isn't letting this page save, so your best isn't kept."
+                  : !prev
+                    ? 'Saved as your best round so far.'
+                    : better
+                      ? `New best! Up from ${old}. The dashed outline is your old best.`
+                      : `Your best is ${old}, shown as the dashed outline.`}
+              {!deleted && kept && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    deleteBest()
+                    setDeleted(true)
+                  }}
+                >
+                  Delete my data
+                </button>
+              )}
             </p>
           </section>
           <section>
@@ -90,7 +122,10 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
             />
           </section>
         </div>
-        <Hexagon standing={standing} />
+        <Hexagon
+          standing={standing}
+          best={deleted ? undefined : prev?.standing}
+        />
       </div>
       <Timeline sentences={sentences} />
       <div className="results-end">
@@ -133,17 +168,17 @@ const at = (i: number, v: number) => {
   return `${(C + R * v * Math.cos(a)).toFixed(1)},${(C + R * v * Math.sin(a)).toFixed(1)}`
 }
 
-function Hexagon({ standing }: { standing: Stats }) {
-  const shape = SPOKES.map(([k], i) => at(i, standing[k] / 100)).join(' ')
-  const said = SPOKES.map(([k, n]) => `${n} ${Math.floor(standing[k])}`).join(
-    ', ',
-  )
+function Hexagon({ standing, best }: { standing: Stats; best?: Stats }) {
+  const shape = (s: Stats) =>
+    SPOKES.map(([k], i) => at(i, s[k] / 100)).join(' ')
+  const said = (s: Stats) =>
+    SPOKES.map(([k, n]) => `${n} ${Math.floor(s[k])}`).join(', ')
   return (
     <figure className="hexagon">
       <svg
         viewBox="-150 0 700 400"
         role="img"
-        aria-label={`Hexagon of your six stats: ${said}.`}
+        aria-label={`Hexagon of your six stats: ${said(standing)}.${best ? ` Your best round, dashed: ${said(best)}.` : ''}`}
       >
         <g className="rings">
           {[1, 0.75, 0.5, 0.25].map((r) => (
@@ -163,7 +198,8 @@ function Hexagon({ standing }: { standing: Stats }) {
             />
           ))}
         </g>
-        <polygon className="this" points={shape} />
+        <polygon className="this" points={shape(standing)} />
+        {best && <polygon className="best" points={shape(best)} />}
         {SPOKES.map(([k, n], i) => {
           const [x, y] = at(i, 1.12).split(',').map(Number)
           const anchor =
@@ -183,6 +219,7 @@ function Hexagon({ standing }: { standing: Stats }) {
       </svg>
       <figcaption>
         Bold spokes make up the score. Further out means more typists you beat.
+        {best && ' The dashed line is your best round.'}
       </figcaption>
     </figure>
   )

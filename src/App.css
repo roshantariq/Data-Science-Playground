@@ -656,6 +656,25 @@ p {
   line-height: 1;
 }
 
+.results .best {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-weight: 600;
+}
+
+.results .best button {
+  font: inherit;
+  font-weight: 400;
+  padding: 4px 10px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
 .stat-row {
   display: grid;
   grid-template-columns: 7.5em 1fr;
@@ -707,6 +726,13 @@ p {
   fill-opacity: 0.55;
   stroke: var(--feel-mark);
   stroke-width: 2.5;
+}
+
+.hexagon .best {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 2.5;
+  stroke-dasharray: 8 6;
 }
 
 .hexagon text {
