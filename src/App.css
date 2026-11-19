@@ -611,6 +611,233 @@ p {
   color: var(--text-muted);
 }
 
+.results {
+  display: grid;
+  gap: 32px;
+}
+
+.results-top {
+  display: grid;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .results-top {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.results-stats {
+  display: grid;
+  gap: 28px;
+}
+
+.results-stats section {
+  display: grid;
+  gap: 10px;
+}
+
+.results-stats h2 {
+  font-size: var(--text-lg);
+}
+
+.results-stats h2 small {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.results .score {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: 7.5em 1fr;
+  gap: 4px 12px;
+}
+
+.stat-row small {
+  display: block;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.stat-bar {
+  grid-column: 2;
+  height: 6px;
+  background: var(--grid);
+  border-radius: var(--radius);
+}
+
+.stat-bar div {
+  height: 100%;
+  background: var(--feel-mark);
+  border-radius: var(--radius);
+}
+
+.hexagon {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.hexagon svg {
+  width: 100%;
+  height: auto;
+}
+
+.hexagon .rings {
+  fill: none;
+  stroke: var(--grid);
+}
+
+.hexagon .rings line.scored {
+  stroke: var(--text-muted);
+  stroke-width: 2;
+}
+
+.hexagon .this {
+  fill: var(--feel);
+  fill-opacity: 0.55;
+  stroke: var(--feel-mark);
+  stroke-width: 2.5;
+}
+
+.hexagon text {
+  fill: var(--text);
+  font-size: 17px;
+}
+
+.hexagon text.scored {
+  font-weight: 600;
+}
+
+@media (max-width: 699px) {
+  .hexagon text {
+    font-size: 26px;
+  }
+}
+
+.hexagon figcaption,
+.timeline > p,
+.results-end p {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.timeline {
+  display: grid;
+  gap: 12px;
+}
+
+.timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeline-head h2 {
+  font-size: var(--text-lg);
+}
+
+.timeline-head > div,
+.timeline-head .nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-head .nav {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.timeline-head button,
+.results-end button {
+  font: inherit;
+  padding: 6px 12px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.timeline-head button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.timeline-head .play,
+.results-end button {
+  font-weight: 600;
+  border-color: var(--action);
+  background: var(--action);
+  color: var(--on-action);
+}
+
+.timeline-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+}
+
+.timeline-scroll svg {
+  display: block;
+  width: 100%;
+  min-width: 720px;
+}
+
+.timeline rect {
+  fill: var(--text);
+}
+
+.timeline rect.start {
+  fill: var(--feel-mark);
+}
+
+.timeline rect.space {
+  fill: var(--grid);
+}
+
+.timeline rect.back {
+  fill: var(--text-muted);
+}
+
+.timeline text {
+  fill: var(--text);
+  font-size: 15px;
+}
+
+.timeline text.start {
+  font-weight: 600;
+}
+
+.timeline text.pause {
+  fill: var(--text-muted);
+  font-size: 14px;
+}
+
+.timeline > p {
+  max-width: 72ch;
+}
+
+.results-end {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
 @media (max-width: 699px) {
   .typing-card {
     padding: 20px 16px;

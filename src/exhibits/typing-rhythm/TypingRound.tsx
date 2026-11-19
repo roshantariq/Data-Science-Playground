@@ -1,26 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { column, COLUMNS, level } from './meters.ts'
+import { Results } from './Results.tsx'
 import { pickSentences } from './sentences.ts'
-import {
-  roundStats,
-  score,
-  standing,
-  STATS,
-  type Key,
-  type Sentence,
-  type Stat,
-} from './stats.ts'
+import { roundStats, standing, type Key, type Sentence } from './stats.ts'
 
 const LENGTHS = [5, 10, 15, 20]
-const NAMES: Record<Stat, string> = {
-  speed: 'Speed',
-  accuracy: 'Accuracy',
-  steadiness: 'Steadiness',
-  touch: 'Touch',
-  rollover: 'Rollover',
-  wordstarts: 'Word starts',
-}
-
 // Letters, space and Backspace are kept; any other key (Shift, arrows...) is
 // a break, so no gap is measured across it.
 const keyName = (key: string) =>
@@ -202,28 +186,25 @@ export function TypingRound() {
             </figcaption>
           </figure>
         </section>
+      ) : result ? (
+        <Results
+          sentences={done}
+          stats={result.s}
+          standing={result.st}
+          onAgain={() => start(round.length)}
+        />
       ) : (
         <section className="typing-card">
-          {!measured ? (
-            <p>Working out your stats…</p>
-          ) : result ? (
-            <>
-              <p>Score: {Math.round(score(result.st))} out of 100</p>
-              <ul>
-                {STATS.map((k) => (
-                  <li key={k}>
-                    {NAMES[k]}: {result.s[k].toFixed(3)}, better than{' '}
-                    {Math.round(result.st[k])}% of typists in the study
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <p>That round was too short to measure. Try another.</p>
+          <p>
+            {measured
+              ? 'That round was too short to measure. Try another.'
+              : 'Working out your stats…'}
+          </p>
+          {measured && (
+            <button type="button" onClick={() => start(round.length)}>
+              Type another round
+            </button>
           )}
-          <button type="button" onClick={() => start(round.length)}>
-            Type another round
-          </button>
         </section>
       )}
 
