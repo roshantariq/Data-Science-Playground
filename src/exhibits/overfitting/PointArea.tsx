@@ -181,6 +181,7 @@ export function PointArea() {
             r={6 * scale}
             className={p.test ? 'test' : undefined}
             tabIndex={0}
+            role="button"
             aria-label={`${p.test ? 'Test' : 'Training'} point ${i + 1}. Arrow keys move it, Delete removes it.`}
             onKeyDown={(e) => onKeyDown(e, i)}
           />
