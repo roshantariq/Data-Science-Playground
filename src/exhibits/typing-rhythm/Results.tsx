@@ -334,7 +334,13 @@ function Timeline({
           </span>
         </div>
       </div>
-      <div className="timeline-scroll">
+      {/* Focusable so keyboard users can scroll it on narrow screens. */}
+      <div
+        className="timeline-scroll"
+        tabIndex={0}
+        role="region"
+        aria-label="Rhythm timeline, scrolls sideways"
+      >
         <svg
           viewBox={`0 0 ${W} 136`}
           role="img"

@@ -12,6 +12,7 @@ export function WingSection({
   const exhibits = wingExhibits(wing)
   const open = exhibits.filter((e) => e.open).length
   const Heading = heading
+  const TileHeading = heading === 'h1' ? 'h2' : 'h3' // no skipped levels
 
   return (
     <section className={`wing wing-${wing}`}>
@@ -34,13 +35,13 @@ export function WingSection({
         {exhibits.map((e) => (
           <li key={e.slug} className="tile">
             <div className="tile-art" aria-hidden="true" />
-            <h3>
+            <TileHeading>
               {e.open ? (
                 <Link to={`/${wing}/${e.slug}`}>{e.title}</Link>
               ) : (
                 e.title
               )}
-            </h3>
+            </TileHeading>
             <p>{e.line}</p>
             <span className={e.open ? 'status open' : 'status soon'}>
               {e.open ? 'Open' : 'Coming soon'}
