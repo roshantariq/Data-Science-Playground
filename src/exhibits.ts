@@ -50,10 +50,10 @@ export const EXHIBITS: Exhibit[] = [
     open: false,
   },
   {
-    slug: 'typing-dna',
+    slug: 'typing-rhythm',
     wing: 'feel',
-    title: 'Typing DNA',
-    line: 'Your rhythm is your fingerprint.',
+    title: 'Typing Rhythm',
+    line: 'Find the shape and rhythm of your typing.',
     open: true,
   },
   {

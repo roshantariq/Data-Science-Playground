@@ -21,10 +21,10 @@ export function Privacy() {
           and are gone when you leave.
         </li>
         <li>
-          <b>Typing DNA:</b> records how long you hold each key and the gaps
-          between keys, never the letters you type. The timings stay in the page
-          and are gone when you leave, unless you choose to save them in your
-          browser. Saved timings can be deleted at any time.
+          <b>Typing Rhythm:</b> notes which key you press and when, to work out
+          your stats. That stays in the page and is gone when you leave. Your
+          best round is saved in your browser as its score and stats only, with
+          no timings or letters, and "Delete my data" removes it.
         </li>
       </ul>
       <h2>Visitor statistics</h2>
