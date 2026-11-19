@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Research data (downloaded datasets and generated results)
+research/**/data/
+__pycache__
