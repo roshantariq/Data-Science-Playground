@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "audit:a11y": "npm run build && node scripts/a11y-audit.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "5.3.0",
