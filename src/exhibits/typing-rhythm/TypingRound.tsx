@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { column, COLUMNS, level } from './meters.ts'
 import { pickSentences } from './sentences.ts'
 import {
   roundStats,
@@ -39,6 +40,23 @@ export function TypingRound() {
   // Key timings and letters stay in page memory only.
   const keys = useRef<Key[]>([])
   const held = useRef(new Map<string, NonNullable<Key>>()) // by e.code, until released
+  const meters = useRef<HTMLSpanElement[]>([])
+
+  // Kick a key's meter up, then let it fall back like a mixer's level meter.
+  function kick(key: string, gap: number | null) {
+    const el = meters.current[column(key)]
+    if (!el) return
+    const up = `scaleY(${level(gap)})`
+    el.getAnimations().forEach((a) => a.cancel())
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches)
+      el.style.transform = up
+    else
+      el.animate([{ transform: up }, { transform: 'scaleY(0)' }], {
+        duration: 700,
+        easing: 'ease-in',
+        fill: 'forwards',
+      })
+  }
   const index = done.length
   const finished = index === round.length
   const target = round[index] ?? ''
@@ -154,6 +172,8 @@ export function TypingRound() {
               const name = keyName(e.key)
               if (!name) return void keys.current.push(null)
               const k = { key: name, down: e.timeStamp, up: NaN }
+              const last = keys.current.findLast(Boolean)
+              kick(name, last ? k.down - last.down : null)
               keys.current.push(k)
               held.current.set(e.code, k)
             }}
@@ -165,6 +185,22 @@ export function TypingRound() {
               setTyped('')
             }}
           />
+          <figure className="typing-meters">
+            <div aria-hidden="true">
+              {COLUMNS.map((c, i) => (
+                <div key={c}>
+                  <span>
+                    <span ref={(el) => void (meters.current[i] = el!)} />
+                  </span>
+                  <small>{c}</small>
+                </div>
+              ))}
+            </div>
+            <figcaption>
+              One meter per column of your keyboard. The quicker a key comes,
+              the higher its meter jumps.
+            </figcaption>
+          </figure>
         </section>
       ) : (
         <section className="typing-card">

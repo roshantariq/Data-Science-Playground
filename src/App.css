@@ -571,6 +571,46 @@ p {
   color: var(--text);
 }
 
+.typing-meters {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.typing-meters > div {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  max-width: 480px;
+}
+
+.typing-meters > div > div {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.typing-meters > div span {
+  display: block;
+  height: 64px;
+  background: var(--grid);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.typing-meters > div span span {
+  height: 100%;
+  background: var(--feel-mark);
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
+.typing-meters small,
+.typing-meters figcaption {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
 @media (max-width: 699px) {
   .typing-card {
     padding: 20px 16px;
