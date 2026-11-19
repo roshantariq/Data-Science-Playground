@@ -441,6 +441,146 @@ p {
   accent-color: var(--action);
 }
 
+/* Typing Rhythm */
+.typing {
+  display: grid;
+  gap: 20px;
+}
+
+.typing-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+.typing-bar [role='group'] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.typing-bar button {
+  font: inherit;
+  padding: 6px 14px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.typing-bar button[aria-pressed='true'] {
+  border-color: var(--action);
+  background: var(--action);
+  color: var(--on-action);
+}
+
+.typing-bar p {
+  color: var(--text-muted);
+}
+
+.typing-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.typing-dots li {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--grid);
+}
+
+.typing-dots li.done {
+  background: var(--feel-mark);
+}
+
+.typing-card {
+  display: grid;
+  gap: 14px;
+  padding: 28px 32px;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+}
+
+.typing-card ul {
+  margin: 0;
+  padding-left: 1.25em;
+}
+
+.typing-card button {
+  justify-self: start;
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--on-action);
+  cursor: pointer;
+}
+
+.typing-target {
+  font-size: var(--text-xl);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.typing-target span {
+  color: var(--text-muted);
+}
+
+.typing-target .ok {
+  color: var(--text);
+}
+
+.typing-target .wrong {
+  color: var(--on-feel);
+  background: var(--feel);
+  text-decoration: underline wavy;
+  text-underline-offset: 6px;
+}
+
+.typing-target .next {
+  box-shadow: inset 2px 0 0 var(--action);
+}
+
+.typing-card label,
+.typing-note {
+  color: var(--text-muted);
+}
+
+.typing-card label {
+  font-size: var(--text-sm);
+}
+
+.typing-card input {
+  font: inherit;
+  font-size: var(--text-lg);
+  padding: 10px 14px;
+  border: 1.5px solid var(--action);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+}
+
+@media (max-width: 699px) {
+  .typing-card {
+    padding: 20px 16px;
+  }
+}
+
+.typing-note {
+  max-width: 72ch;
+}
+
 .panel {
   display: grid;
   gap: 6px;

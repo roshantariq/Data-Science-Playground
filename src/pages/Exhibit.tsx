@@ -3,6 +3,7 @@ import { Description } from '../components/Description.tsx'
 import { EXHIBITS, WINGS, wingExhibits } from '../exhibits.ts'
 import { Explainer, TryThis } from '../exhibits/overfitting/Explainer.tsx'
 import { PointArea } from '../exhibits/overfitting/PointArea.tsx'
+import { TypingRound } from '../exhibits/typing-rhythm/TypingRound.tsx'
 import { NotFound } from './NotFound.tsx'
 
 export function Exhibit() {
@@ -23,6 +24,8 @@ export function Exhibit() {
       <h1>{exhibit.title}</h1>
       {exhibit.slug === 'overfitting' ? (
         <PointArea />
+      ) : exhibit.slug === 'typing-rhythm' ? (
+        <TypingRound />
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
