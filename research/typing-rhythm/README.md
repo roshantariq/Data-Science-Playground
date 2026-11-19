@@ -19,6 +19,15 @@ python -P stats.py data/Keystrokes.zip data/metadata_participants.txt 10000 data
 python -P report.py data/full.csv
 ```
 
+The exhibit's reference tables come from every typist who passes the same filters (162,056):
+
+```sh
+python -P tables.py data/Keystrokes.zip data/metadata_participants.txt 162056 ../../src/exhibits/typing-rhythm/tables.json
+npx prettier --write ../../src/exhibits/typing-rhythm/tables.json
+```
+
+`tables.py` works out the six exhibit stats the way the browser does. Only letters, space and Backspace count, and any other key breaks the stream, so no gap spans it. It takes one random round of 5, 10 and 15 sentences per typist and saves each stat's percentiles. It also saves each letter pair's mean log gap, which Steadiness and Word starts measure against. Speed comes out about 6 wpm above the dataset's own figure, since Shift and punctuation time is left out.
+
 `stats.py` reads the zip directly, samples typists on QWERTY desktop or laptop keyboards, and works out every candidate stat for all 15 sentences, the odd sentences and the even sentences. `report.py` prints how the stats relate to each other and how repeatable each one is (odd against even sentences). It also prints how each stat relates to two skill signals people reported themselves (typing course, number of fingers) and to keyboard type, before and after taking speed out.
 
 ## Checks against the paper
