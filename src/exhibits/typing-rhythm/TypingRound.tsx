@@ -213,8 +213,8 @@ export function TypingRound() {
               ))}
             </div>
             <figcaption>
-              One meter per column of your keyboard. The quicker a key comes,
-              the higher its meter jumps.
+              One meter per column of your keyboard. The sooner a key follows
+              the last one, the higher its meter jumps.
             </figcaption>
           </figure>
         </section>

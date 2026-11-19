@@ -60,7 +60,7 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
                 {deleted
                   ? 'Deleted. Nothing is saved now.'
                   : !kept
-                    ? "Your browser isn't letting this page save, so your best isn't kept."
+                    ? "Your browser won't let this page save anything, so your best round can't be kept."
                     : !prev
                       ? 'Saved as your best round so far.'
                       : better
@@ -81,7 +81,7 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
             )}
           </section>
           <section>
-            <h2>In your score</h2>
+            <h2>{sample ? 'In the score' : 'In your score'}</h2>
             <StatRow
               standing={standing}
               k="speed"
@@ -103,19 +103,22 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
           </section>
           <section>
             <h2>
-              Your style <small>not scored, no right answer</small>
+              {sample ? 'Their style' : 'Your style'}{' '}
+              <small>not scored, no right answer</small>
             </h2>
             <StatRow
               standing={standing}
               k="touch"
               text={<>Holds keys more evenly than {p('touch')}</>}
-              note="How alike your key-hold times are"
+              note="How alike your hold times are"
             />
             <StatRow
               standing={standing}
               k="rollover"
-              text={<>Presses the next key early more than {p('rollover')}</>}
-              note={`Pressed before letting go of the last key: ${pct(stats.rollover * 100)} of your keys`}
+              text={
+                <>Rolls into the next key more often than {p('rollover')}</>
+              }
+              note={`${pct(stats.rollover * 100)} of your keys went down before the last one came up`}
             />
             <StatRow
               standing={standing}
@@ -130,7 +133,7 @@ export function Results({ sentences, stats, standing, onAgain }: Props) {
           best={deleted ? undefined : prev?.standing}
         />
       </div>
-      <Timeline sentences={sentences} />
+      <Timeline sentences={sentences} sample={sample} />
       <div className="results-end">
         {onAgain && (
           <button type="button" onClick={onAgain}>
@@ -223,7 +226,7 @@ function Hexagon({ standing, best }: { standing: Stats; best?: Stats }) {
         })}
       </svg>
       <figcaption>
-        Bold spokes make up the score. Further out means more typists you beat.
+        Bold spokes make up the score. Further out means you beat more typists.
         {best && ' The dashed line is your best round.'}
       </figcaption>
     </figure>
@@ -235,7 +238,13 @@ const TOP = 44
 const LOW = 74
 const BAR = 22
 
-function Timeline({ sentences }: { sentences: Sentence[] }) {
+function Timeline({
+  sentences,
+  sample,
+}: {
+  sentences: Sentence[]
+  sample: boolean
+}) {
   const [i, setI] = useState(0)
   const [playing, setPlaying] = useState(false)
   const audio = useRef<AudioContext | null>(null)
@@ -293,7 +302,7 @@ function Timeline({ sentences }: { sentences: Sentence[] }) {
   return (
     <section className="timeline">
       <div className="timeline-head">
-        <h2>Your rhythm, key by key</h2>
+        <h2>{sample ? 'Their' : 'Your'} rhythm, key by key</h2>
         <div>
           <button
             type="button"
@@ -339,7 +348,7 @@ function Timeline({ sentences }: { sentences: Sentence[] }) {
       <p>
         Each bar is a key: its width is how long you held it, and the space
         before it is the gap since the last key. Bars on the lower line were
-        pressed before the last key was let go (rollover). Gold bars start a new
+        pressed before the last key came up (rollover). Gold bars start a new
         word; light bars are spaces. Play turns each bar into a note: keys on
         the left of the keyboard play low, keys on the right play high.
       </p>
