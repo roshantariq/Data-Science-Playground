@@ -18,8 +18,8 @@ def init(path, n=None):
 
 
 def parse(pid):
-    """Per sentence: (letters and spaces in the final text, keys in press order).
-    A key is (press, release, char or 'BKSP'), or None for any other key."""
+    """Per sentence: (letters and spaces in the final text, keys in press order,
+    uncorrected errors). A key is (press, release, char or 'BKSP'), or None for any other key."""
     raw = z.read(f'Keystrokes/files/{pid}_keystrokes.txt').decode('utf-8', 'replace')
     sents = {}
     for line in raw.split('\n')[1:]:
@@ -35,15 +35,33 @@ def parse(pid):
         k = 'BKSP' if f[7] == 'BKSP' or c == 8 else f[7].lower()
         if not k:
             k = ' ' if c == 32 else chr(c + 32) if 65 <= c <= 90 else ''
-        s = sents.setdefault(f[1], (sum(c in KEEP for c in f[3].lower()), []))
+        s = sents.setdefault(f[1], (clean(f[3]), [], clean(f[2])))
         s[1].append((p, r, k) if k == 'BKSP' or k in KEEP else (p, None, None))
     out = []
-    for chars, keys in sents.values():
+    for typed, keys, target in sents.values():
         keys.sort(key=lambda x: x[0])
         keys = [None if k[2] is None else k for k in keys]
         if sum(k is not None for k in keys) >= 5:
-            out.append((chars, keys))
+            out.append((len(typed), keys, lev(target, typed)))
     return out
+
+
+def clean(text):
+    """Lowercase letters and spaces only, as in the exhibit's sentences."""
+    return ''.join(c for c in text.lower() if c in KEEP)
+
+
+def lev(a, b):
+    """Edit distance: the fewest letters added, removed or changed to turn a into b."""
+    if a == b:
+        return 0
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = cur
+    return prev[-1]
 
 
 def pairs(keys):
@@ -55,7 +73,7 @@ def stats(sents):
     """The six stats for one round, or None if it is too short to measure."""
     chars = minutes = bk = roll = nroll = 0
     holds, iv = [], []
-    for c, keys in sents:
+    for c, keys, unc in sents:
         pr = pairs(keys)
         gaps = [b[0] - a[0] for a, b in pr]
         if not gaps:
@@ -63,7 +81,7 @@ def stats(sents):
         # Time as if every gap were typed: the mean gap times the gaps between kept keys.
         minutes += np.mean(gaps) * (sum(k is not None for k in keys) - 1) / 60000
         chars += c
-        bk += sum(k is not None and k[2] == 'BKSP' for k in keys)
+        bk += sum(k is not None and k[2] == 'BKSP' for k in keys) + unc
         nroll += len(pr)
         roll += sum(b[0] < a[1] for a, b in pr)
         holds += [k[1] - k[0] for k in keys if k and k[2] != 'BKSP' and 0 < k[1] - k[0] < 1000]
@@ -85,7 +103,7 @@ def stats(sents):
         return None
     return dict(
         speed=chars / 5 / minutes,  # wpm
-        accuracy=bk / chars,  # corrections per character
+        accuracy=bk / chars,  # mistakes (fixed with Backspace or left in) per character
         steadiness=float(np.std(res)),
         touch=float(np.std(holds) / np.mean(holds)),
         rollover=roll / nroll,
@@ -95,7 +113,7 @@ def stats(sents):
 
 def logsums(pid):
     acc = {}
-    for _, keys in parse(pid):
+    for _, keys, _ in parse(pid):
         for a, b in pairs(keys):
             t = b[0] - a[0]
             if 'BKSP' not in (a[2], b[2]) and 0 < t < 2000:

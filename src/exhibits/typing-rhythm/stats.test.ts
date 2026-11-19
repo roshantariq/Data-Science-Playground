@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { SENTENCES } from './sentences.ts'
 import {
+  lev,
   percentile,
   roundStats,
   score,
@@ -24,7 +25,7 @@ const SPEED5 =
   5 /
   ((SENTENCES.slice(0, 5).reduce((t, s) => t + s.length - 1, 0) * 0.2) / 60)
 const round = (n: number): Sentence[] =>
-  SENTENCES.slice(0, n).map((typed) => ({ typed, keys: typeOut(typed) }))
+  SENTENCES.slice(0, n).map((s) => ({ target: s, typed: s, keys: typeOut(s) }))
 
 describe('roundStats', () => {
   test('speed is characters / 5 per minute', () => {
@@ -53,6 +54,13 @@ describe('roundStats', () => {
     expect(roundStats(r)!.accuracy).toBeCloseTo(1 / chars, 9)
   })
 
+  test('a mistake left in counts the same as one fixed', () => {
+    const r = round(5)
+    r[0].typed = 'x' + r[0].typed.slice(1) // wrong first letter, not fixed
+    const chars = SENTENCES.slice(0, 5).join('').length
+    expect(roundStats(r)!.accuracy).toBeCloseTo(1 / chars, 9)
+  })
+
   test('every key held while the next is pressed is all rollover', () => {
     const r = round(5).map((s) => ({
       ...s,
@@ -64,6 +72,13 @@ describe('roundStats', () => {
   test('a single sentence is too short to measure', () => {
     expect(roundStats(round(1))).toBeNull()
   })
+})
+
+test('edit distance counts a skipped letter once', () => {
+  expect(lev('the cat', 'the cat')).toBe(0)
+  expect(lev('the cat', 'th cat')).toBe(1)
+  expect(lev('the cat', 'the bat')).toBe(1)
+  expect(lev('the cat', '')).toBe(7)
 })
 
 describe('percentile', () => {

@@ -5,7 +5,8 @@ import tables from './tables.json'
 // A letter, space or Backspace press; null marks any other key, which breaks
 // the stream so no gap spans it.
 export type Key = { key: string; down: number; up: number } | null
-export type Sentence = { typed: string; keys: Key[] }
+// target is the sentence shown; typed is what was in the box when it ended.
+export type Sentence = { target: string; typed: string; keys: Key[] }
 
 export const STATS = [
   'speed',
@@ -31,6 +32,24 @@ const median = (x: number[]) => {
   return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2
 }
 
+// Edit distance: the fewest letters added, removed or changed to turn a into b.
+export function lev(a: string, b: string): number {
+  let prev = [...Array(b.length + 1).keys()]
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]
+    for (let j = 1; j <= b.length; j++)
+      cur.push(
+        Math.min(
+          prev[j] + 1,
+          cur[j - 1] + 1,
+          prev[j - 1] + +(a[i - 1] !== b[j - 1]),
+        ),
+      )
+    prev = cur
+  }
+  return prev[b.length]
+}
+
 // Neighbouring keys with no other key between them.
 const pairs = (keys: Key[]) =>
   keys
@@ -49,14 +68,16 @@ export function roundStats(sentences: Sentence[]): Stats | null {
   let nroll = 0
   const holds: number[] = []
   const iv: [string, number][] = []
-  for (const { typed, keys } of sentences) {
+  for (const { target, typed, keys } of sentences) {
     const pr = pairs(keys)
     if (!pr.length) return null
     // Time as if every gap were typed: the mean gap times the gaps between kept keys.
     const kept = keys.filter(Boolean).length
     minutes += (mean(pr.map(([a, b]) => b.down - a.down)) * (kept - 1)) / 60000
-    chars += typed.toLowerCase().replace(/[^a-z ]/g, '').length
-    bk += keys.filter((k) => k?.key === BK).length
+    const text = typed.toLowerCase().replace(/[^a-z ]/g, '')
+    chars += text.length
+    // Mistakes: Backspace presses, plus any left in when the sentence ended.
+    bk += keys.filter((k) => k?.key === BK).length + lev(target, text)
     nroll += pr.length
     roll += pr.filter(([a, b]) => b.down < a.up).length
     for (const k of keys)
@@ -84,7 +105,7 @@ export function roundStats(sentences: Sentence[]): Stats | null {
   if (res.length <= 30 || ws.length <= 5 || ww.length <= 20) return null
   return {
     speed: chars / 5 / minutes, // words per minute
-    accuracy: bk / chars, // corrections per character
+    accuracy: bk / chars, // mistakes per character
     steadiness: sd(res),
     touch: sd(holds) / mean(holds),
     rollover: roll / nroll,
