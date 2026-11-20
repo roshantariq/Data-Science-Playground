@@ -1,16 +1,38 @@
-/* Layout from the Design Brief. One side gutter for every page. */
-.site-header,
-main,
-.site-footer {
-  padding-left: max(16px, 4vw);
-  padding-right: max(16px, 4vw);
+/* Layout from the Design Brief. One side gutter and one content width for
+   every page, so the header, page and footer all start at the same x. */
+.frame,
+main {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: max(16px, 4vw);
 }
 
 a {
   color: inherit;
 }
 
-.site-header {
+/* Hidden until a keyboard user tabs to it. */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 10;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--on-action);
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.header-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,26 +41,42 @@ a {
   padding-block: 16px;
 }
 
-/* Phones: site name and a smaller theme button on one row, links below. */
-@media (max-width: 699px) {
-  .site-header {
+/* Up to tablet width the header doesn't fit on one row: site name and theme
+   button share the first row, links go below. */
+@media (max-width: 859px) {
+  .header-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 12px;
+    row-gap: 4px;
+  }
+
+  .site-header .header-inner nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+  }
+}
+
+/* Phones: smaller name and button; links and button at least 44px tall. */
+@media (max-width: 699px) {
+  .header-inner {
+    row-gap: 0;
   }
 
   .site-name {
     font-size: var(--text-sm);
   }
 
-  header.site-header nav {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin-left: 0;
+  .header-inner nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   .site-header .theme-toggle {
-    padding: 4px 8px;
+    min-height: 44px;
+    padding: 4px 10px;
     font-size: var(--text-sm);
   }
 }
@@ -57,7 +95,22 @@ a {
   margin-left: auto;
 }
 
-.theme-toggle,
+/* An outline, so it doesn't compete with the exhibits for attention. */
+.theme-toggle {
+  font: inherit;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1.5px solid var(--action);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: color-mix(in srgb, var(--action) 14%, transparent);
+}
+
 .point-controls button {
   font: inherit;
   font-weight: 600;
@@ -73,8 +126,6 @@ main {
   display: grid;
   gap: 48px;
   padding-block: 24px 64px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 h1 {
@@ -111,7 +162,11 @@ p {
 .hero p {
   margin-top: 14px;
   color: var(--text-muted);
-  max-width: 32ch;
+  max-width: 40ch;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 /* Wing header and tiles */
@@ -133,12 +188,9 @@ p {
 }
 
 .wing-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  padding: 22px 24px;
+  display: grid;
+  gap: 4px;
+  padding: 14px 20px;
   border-radius: var(--radius);
   background: var(--wing);
   color: var(--on-wing);
@@ -150,15 +202,27 @@ p {
 }
 
 .wing-head a {
-  text-decoration: none;
+  text-decoration-thickness: 2px;
 }
 
-.wing-head p {
-  margin-top: 4px;
-}
-
-.wing-head span {
+.wing-meta span {
+  font-size: var(--text-sm);
   font-weight: 600;
+}
+
+/* Wider screens: the intro and the count share one line. */
+@media (min-width: 700px) {
+  .wing-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 24px;
+  }
+
+  .wing-meta span {
+    font-size: var(--text-base);
+  }
 }
 
 .tiles {
@@ -171,17 +235,111 @@ p {
 }
 
 .tile {
+  position: relative;
   display: grid;
   gap: 6px;
   align-content: start;
   min-width: 0;
 }
 
+/* An open tile's title link covers the whole tile, so the drawing opens it too. */
+.tile-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
 .tile-art {
+  display: block;
+  width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
   background: var(--surface);
   border-radius: var(--radius);
-  box-shadow: inset 0 -4px 0 var(--mark);
+  box-shadow: inset 0 0 0 1.5px var(--mark);
+}
+
+/* Tile drawings: the wing's mark colour, ink and grid, so both themes work. */
+.tile-art :is(path, ellipse) {
+  fill: none;
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tile-art .art-stroke {
+  stroke: var(--mark);
+}
+
+.tile-art .art-fill {
+  fill: var(--mark);
+}
+
+.tile-art .art-ink {
+  fill: var(--text);
+}
+
+.tile-art .art-line {
+  stroke: var(--text);
+  stroke-width: 1.5px;
+}
+
+.tile-art .art-grid {
+  stroke: var(--grid);
+  stroke-width: 1.5px;
+}
+
+.tile-art .art-ring {
+  fill: var(--surface);
+  stroke: var(--feel-mark);
+  stroke-width: 2px;
+}
+
+.tile-art .dashed {
+  stroke-dasharray: 4 4;
+}
+
+/* Guides drawn twice: faint at rest, and a full-strength copy on top that
+   fades in on hover while the drawing lifts. */
+.tile-art .art-rest > * {
+  stroke: var(--guide);
+}
+
+.tile-art .art-full .art-grid {
+  stroke: var(--guide-strong);
+}
+
+.tile-art .art-full {
+  opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tile-art .art-marks {
+  transform-origin: 50% 100%;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tile:has(.tile-link:focus-visible) .art-full {
+  opacity: 1;
+}
+
+.tile:has(.tile-link:focus-visible) .art-marks {
+  transform: translateY(-4px) scale(1.04);
+}
+
+@media (hover: hover) {
+  .tile:hover .art-full {
+    opacity: 1;
+  }
+
+  .tile:hover .art-marks {
+    transform: translateY(-4px) scale(1.04);
+  }
+
+  .tile:hover .tile-link {
+    text-decoration-thickness: 2px;
+  }
 }
 
 .tile :is(h2, h3) {
@@ -882,7 +1040,7 @@ p {
   padding: 16px 20px;
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: inset 4px 0 0 var(--mark);
+  box-shadow: inset 0 0 0 1.5px var(--mark);
 }
 
 .panel h2 {
@@ -995,19 +1153,30 @@ p {
 }
 
 /* Footer */
+/* The surface runs full width; the contents line up with the page. */
 .site-footer {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px 32px;
   padding-block: 28px;
   background: var(--surface);
 }
 
-.site-footer div {
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.footer-inner > div {
   display: grid;
   gap: 4px;
   min-width: 0;
+}
+
+@media (max-width: 699px) {
+  .footer-inner {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 .site-footer span {

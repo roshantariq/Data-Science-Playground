@@ -17,6 +17,8 @@
   --on-feel: light-dark(#073b4c, #101518);
   --feel-mark: light-dark(#a67c00, #f2b544);
   --point: light-dark(#073b4c, #e6ecef);
+  --guide: light-dark(#ddbf7f, #3d4c54);
+  --guide-strong: light-dark(#b8913a, #5c6d76);
 
   --font-display: 'Unbounded', system-ui, sans-serif;
   --font-body: 'IBM Plex Sans', system-ui, sans-serif;
@@ -49,6 +51,22 @@ body {
   font-size: var(--text-base);
   line-height: 1.55;
   font-variant-numeric: tabular-nums;
+  caret-color: var(--action);
+}
+
+::selection {
+  background: var(--action);
+  color: var(--on-action);
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
 }
 
 h1,
