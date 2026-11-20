@@ -1,7 +1,9 @@
 import { Link } from 'react-router'
-import { WINGS, wingExhibits, type WingId } from '../exhibits.ts'
+import { WINGS, wingCount, wingExhibits, type WingId } from '../exhibits.ts'
+import { TileArt } from './TileArt.tsx'
 
-// A wing's coloured header and its exhibit tiles. Only open exhibits link.
+// A wing's coloured header and its exhibit tiles. Only open exhibits link,
+// and an open tile's title link covers the whole tile.
 export function WingSection({
   wing,
   heading = 'h2',
@@ -17,27 +19,27 @@ export function WingSection({
   return (
     <section className={`wing wing-${wing}`}>
       <div className="wing-head">
-        <div>
-          <Heading>
-            {heading === 'h2' ? (
-              <Link to={`/${wing}`}>{WINGS[wing].title}</Link>
-            ) : (
-              WINGS[wing].title
-            )}
-          </Heading>
+        <Heading>
+          {heading === 'h2' ? (
+            <Link to={`/${wing}`}>{WINGS[wing].title}</Link>
+          ) : (
+            WINGS[wing].title
+          )}
+        </Heading>
+        <div className="wing-meta">
           <p>{WINGS[wing].intro}</p>
+          <span>{wingCount(exhibits.length, open)}</span>
         </div>
-        <span>
-          {exhibits.length} exhibits, {open} open
-        </span>
       </div>
       <ul className="tiles">
         {exhibits.map((e) => (
           <li key={e.slug} className="tile">
-            <div className="tile-art" aria-hidden="true" />
+            <TileArt slug={e.slug} />
             <TileHeading>
               {e.open ? (
-                <Link to={`/${wing}/${e.slug}`}>{e.title}</Link>
+                <Link className="tile-link" to={`/${wing}/${e.slug}`}>
+                  {e.title}
+                </Link>
               ) : (
                 e.title
               )}

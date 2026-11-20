@@ -22,41 +22,56 @@ function App() {
 
   return (
     <>
+      <a
+        className="skip-link"
+        href="#main"
+        onClick={(e) => {
+          e.preventDefault()
+          document.getElementById('main')?.focus()
+        }}
+      >
+        Skip to content
+      </a>
       <header className="site-header">
-        <Link className="site-name" to="/">
-          Data Science Playground
-        </Link>
-        <nav>
-          <Link to="/machines">{WINGS.machines.title}</Link>
-          <Link to="/feel">{WINGS.feel.title}</Link>
-        </nav>
-        <button
-          type="button"
-          className="theme-toggle"
-          onClick={() => {
-            setTheme(next)
-            setThemeState(next)
-          }}
-        >
-          Theme: {LABEL[theme]}
-        </button>
+        <div className="frame header-inner">
+          <Link className="site-name" to="/">
+            Data Science Playground
+          </Link>
+          <nav>
+            <Link to="/machines">{WINGS.machines.title}</Link>
+            <Link to="/feel">{WINGS.feel.title}</Link>
+          </nav>
+          <button
+            type="button"
+            className="theme-toggle"
+            aria-label={`Theme: ${LABEL[theme]}. Switch to ${LABEL[next]}`}
+            onClick={() => {
+              setTheme(next)
+              setThemeState(next)
+            }}
+          >
+            Theme: {LABEL[theme]}
+          </button>
+        </div>
       </header>
-      <main>
+      <main id="main" tabIndex={-1}>
         <Outlet />
       </main>
       <footer className="site-footer">
-        <div>
-          <b>Data Science Playground</b>
-          <span>Everything runs in your browser.</span>
-        </div>
-        <div>
-          <span>Site</span>
-          <Link to="/about">About</Link>
-          <Link to="/privacy">Privacy</Link>
-        </div>
-        <div>
-          <span>Contact</span>
-          <a href="https://github.com/roshantariq">github.com/roshantariq</a>
+        <div className="frame footer-inner">
+          <div>
+            <b>Data Science Playground</b>
+            <span>Everything runs in your browser.</span>
+          </div>
+          <div>
+            <span>Site</span>
+            <Link to="/about">About</Link>
+            <Link to="/privacy">Privacy</Link>
+          </div>
+          <div>
+            <span>Contact</span>
+            <a href="https://github.com/roshantariq">github.com/roshantariq</a>
+          </div>
         </div>
       </footer>
       <ScrollRestoration />

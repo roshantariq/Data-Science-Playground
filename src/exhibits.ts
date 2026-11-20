@@ -15,7 +15,8 @@ export const WINGS: Record<WingId, { title: string; intro: string }> = {
   },
   feel: {
     title: 'Data You Can Feel',
-    intro: 'Your own clicks, keys and senses become the data.',
+    intro:
+      'Your own clicks, keys and senses become the data, and none of it leaves your browser.',
   },
 }
 
@@ -84,3 +85,9 @@ export const isWing = (id: string | undefined): id is WingId =>
 
 export const wingExhibits = (wing: WingId) =>
   EXHIBITS.filter((e) => e.wing === wing)
+
+// "4 exhibits, 1 open", or "4 exhibits, coming soon" when none is open yet.
+export function wingCount(total: number, open: number) {
+  const exhibits = `${total} ${total === 1 ? 'exhibit' : 'exhibits'}`
+  return open ? `${exhibits}, ${open} open` : `${exhibits}, coming soon`
+}
