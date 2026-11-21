@@ -91,3 +91,14 @@ export function wingCount(total: number, open: number) {
   const exhibits = `${total} ${total === 1 ? 'exhibit' : 'exhibits'}`
   return open ? `${exhibits}, ${open} open` : `${exhibits}, coming soon`
 }
+
+// The next open exhibit after this one in site order, wrapping round to the
+// start. Coming-soon exhibits are skipped; null when no other one is open.
+export function nextExhibit(current: Exhibit, list: Exhibit[] = EXHIBITS) {
+  const at = list.indexOf(current)
+  for (let step = 1; step < list.length; step++) {
+    const e = list[(at + step) % list.length]
+    if (e.open) return e
+  }
+  return null
+}

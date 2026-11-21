@@ -1201,6 +1201,81 @@ p {
   padding-left: 1.2em;
 }
 
+/* "Next up": the next open exhibit's drawing, title and line, as one link.
+   Hover and keyboard focus react like an open tile. */
+.next-up {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.next-up h2 {
+  font-size: var(--text-lg);
+}
+
+.next-card {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  max-width: 720px;
+  text-decoration: none;
+}
+
+.next-text {
+  display: grid;
+  gap: 4px;
+}
+
+.next-text b {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.next-text span {
+  color: var(--text-muted);
+}
+
+.next-card:focus-visible .art-full {
+  opacity: 1;
+}
+
+.next-card:focus-visible .art-marks {
+  transform: translateY(-4px) scale(1.04);
+}
+
+@media (hover: hover) {
+  .next-card:hover .art-full {
+    opacity: 1;
+  }
+
+  .next-card:hover .art-marks {
+    transform: translateY(-4px) scale(1.04);
+  }
+
+  .next-card:hover .next-text b {
+    text-decoration-thickness: 2px;
+  }
+}
+
+@media (max-width: 699px) {
+  .next-card {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 12px;
+  }
+
+  .next-text b {
+    font-size: var(--text-base);
+  }
+
+  .next-text span {
+    font-size: var(--text-sm);
+  }
+}
+
 .wing-strip {
   display: grid;
   gap: 12px;
