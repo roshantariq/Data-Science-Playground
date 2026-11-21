@@ -1,5 +1,7 @@
+import { lazy, Suspense } from 'react'
 import { Link, useParams } from 'react-router'
 import { Description } from '../components/Description.tsx'
+import { Spinner } from '../components/Spinner.tsx'
 import { TileArt } from '../components/TileArt.tsx'
 import { EXHIBITS, WINGS, nextExhibit, wingExhibits } from '../exhibits.ts'
 import { Explainer, TryThis } from '../exhibits/overfitting/Explainer.tsx'
@@ -9,7 +11,18 @@ import {
   TryThis as TypingTryThis,
 } from '../exhibits/typing-rhythm/Explainer.tsx'
 import { TypingRound } from '../exhibits/typing-rhythm/TypingRound.tsx'
+import {
+  Explainer as SlopeExplainer,
+  TryThis as SlopeTryThis,
+} from '../exhibits/gradient-descent/Explainer.tsx'
 import { NotFound } from './NotFound.tsx'
+
+// The Ski Slope brings Three.js, so its code loads only when its page opens.
+const SkiSlope = lazy(() =>
+  import('../exhibits/gradient-descent/SkiSlope.tsx').then((m) => ({
+    default: m.SkiSlope,
+  })),
+)
 
 export function Exhibit() {
   const { wing, slug } = useParams()
@@ -32,6 +45,10 @@ export function Exhibit() {
         <PointArea />
       ) : exhibit.slug === 'typing-rhythm' ? (
         <TypingRound />
+      ) : exhibit.slug === 'gradient-descent' ? (
+        <Suspense fallback={<Spinner />}>
+          <SkiSlope />
+        </Suspense>
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
@@ -42,6 +59,8 @@ export function Exhibit() {
             <Explainer />
           ) : exhibit.slug === 'typing-rhythm' ? (
             <TypingExplainer />
+          ) : exhibit.slug === 'gradient-descent' ? (
+            <SlopeExplainer />
           ) : (
             <p>
               Explains the idea in one paragraph once you have tried the
@@ -51,6 +70,7 @@ export function Exhibit() {
         </section>
         {exhibit.slug === 'overfitting' && <TryThis />}
         {exhibit.slug === 'typing-rhythm' && <TypingTryThis />}
+        {exhibit.slug === 'gradient-descent' && <SlopeTryThis />}
       </div>
       {next && (
         <section className="next-up" aria-labelledby="next-up-heading">

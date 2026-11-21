@@ -15,6 +15,7 @@ const PAGES = [
   '/machines',
   '/feel',
   '/machines/overfitting',
+  '/machines/gradient-descent',
   '/feel/typing-rhythm',
   '/about',
   '/privacy',
@@ -23,6 +24,7 @@ const PAGES = [
 const TAB_PAGES = [
   '/',
   '/machines/overfitting',
+  '/machines/gradient-descent',
   '/feel/typing-rhythm',
   '/about',
 ]

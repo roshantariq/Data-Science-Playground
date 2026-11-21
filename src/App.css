@@ -710,6 +710,179 @@ p {
   accent-color: var(--action);
 }
 
+/* Loading circle: a box about the exhibit's height, the dots turning in
+   12 steps so each dot takes the next one's place. */
+.spinner {
+  display: grid;
+  place-items: center;
+  min-height: 50svh;
+}
+
+.spinner svg {
+  width: 40px;
+  height: 40px;
+  fill: var(--text);
+  animation: spin 1s steps(12) infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner svg {
+    animation: none;
+  }
+}
+
+/* Gradient Descent Ski Slope */
+.slope {
+  display: grid;
+  gap: 16px;
+}
+
+.slope-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.slope-bar span {
+  margin-right: 4px;
+}
+
+.slope-bar button {
+  font: inherit;
+  padding: 6px 14px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.slope-bar button[aria-pressed='true'] {
+  border-color: var(--action);
+  background: var(--action);
+  color: var(--on-action);
+}
+
+.slope-view {
+  position: relative;
+}
+
+.slope-canvas {
+  height: min(56svh, 560px);
+  min-height: 300px;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+  cursor: grab;
+  overflow: hidden;
+}
+
+.slope-canvas canvas {
+  display: block;
+}
+
+@media (max-width: 699px) {
+  .slope-canvas {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1;
+  }
+}
+
+.slope-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.slope-controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 16px;
+  max-width: 640px;
+}
+
+.slope-controls label {
+  font-weight: 600;
+  min-width: 9.5em;
+}
+
+.slope-controls input[type='range'] {
+  accent-color: var(--action);
+}
+
+.slope-buttons {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.slope-buttons button {
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--on-action);
+  cursor: pointer;
+}
+
+.slope-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.slope-status {
+  font-weight: 600;
+  min-height: 1.55em;
+}
+
+.slope-chart {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  max-width: 640px;
+}
+
+.slope-chart figcaption {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.slope-chart svg {
+  display: block;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+}
+
+.slope-chart .axis {
+  stroke: var(--grid);
+}
+
+.slope-chart .height {
+  fill: none;
+  stroke: var(--mark);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+}
+
 /* Typing Rhythm */
 .typing {
   display: grid;

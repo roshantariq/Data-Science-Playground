@@ -34,7 +34,7 @@ export const EXHIBITS: Exhibit[] = [
     wing: 'machines',
     title: 'Gradient Descent Ski Slope',
     line: 'Roll downhill to the lowest error.',
-    open: false,
+    open: true,
   },
   {
     slug: 'be-the-algorithm',
