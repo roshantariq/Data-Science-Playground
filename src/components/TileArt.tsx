@@ -24,10 +24,13 @@ function draw(s: Shape, i: number) {
   return <path key={i} className={s.dashed ? `${cls} dashed` : cls} d={s.d} />
 }
 
-// A tile's drawing, with fresh random data each time the page loads.
+// A tile's drawing, with fresh random data each time the page loads. If the
+// same drawing is reused for another exhibit (React keeps it when a link
+// swaps the page's contents), it draws the new exhibit instead.
 export function TileArt({ slug }: { slug: string }) {
-  const [art] = useState(() => tileArt(slug))
-  return <ArtSvg art={art} />
+  const [drawn, setDrawn] = useState(() => ({ slug, art: tileArt(slug) }))
+  if (drawn.slug !== slug) setDrawn({ slug, art: tileArt(slug) })
+  return <ArtSvg art={drawn.slug === slug ? drawn.art : null} />
 }
 
 // One drawing, shared by the tiles and the hero preview. Decorative: the
