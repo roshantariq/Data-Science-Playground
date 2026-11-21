@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { tileArt, type Shape } from './tileArt.ts'
+import { tileArt, type Art, type Shape } from './tileArt.ts'
 
 function draw(s: Shape, i: number) {
   const cls = `art-${s.style}`
@@ -25,12 +25,26 @@ function draw(s: Shape, i: number) {
 }
 
 // A tile's drawing, with fresh random data each time the page loads.
-// Decorative: the tile's title and line already say what the exhibit is.
 export function TileArt({ slug }: { slug: string }) {
   const [art] = useState(() => tileArt(slug))
+  return <ArtSvg art={art} />
+}
 
+// One drawing, shared by the tiles and the hero preview. Decorative: the
+// title beside it, or the link around it, says what the exhibit is.
+export function ArtSvg({
+  art,
+  className,
+}: {
+  art: Art | null
+  className?: string
+}) {
   return (
-    <svg className="tile-art" viewBox="0 0 160 90" aria-hidden="true">
+    <svg
+      className={className ? `tile-art ${className}` : 'tile-art'}
+      viewBox="0 0 160 90"
+      aria-hidden="true"
+    >
       {art && (
         <>
           <g className="art-rest">{art.back.map(draw)}</g>
