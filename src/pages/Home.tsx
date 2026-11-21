@@ -1,3 +1,4 @@
+import { HeroPreview } from '../components/HeroPreview.tsx'
 import { WingSection } from '../components/WingSection.tsx'
 
 export function Home() {
@@ -11,7 +12,7 @@ export function Home() {
             idea yourself.
           </p>
         </div>
-        <div className="placeholder">Animated preview of the exhibits</div>
+        <HeroPreview />
       </section>
       <WingSection wing="machines" />
       <WingSection wing="feel" />
