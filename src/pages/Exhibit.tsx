@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router'
 import { Description } from '../components/Description.tsx'
-import { EXHIBITS, WINGS, wingExhibits } from '../exhibits.ts'
+import { TileArt } from '../components/TileArt.tsx'
+import { EXHIBITS, WINGS, nextExhibit, wingExhibits } from '../exhibits.ts'
 import { Explainer, TryThis } from '../exhibits/overfitting/Explainer.tsx'
 import { PointArea } from '../exhibits/overfitting/PointArea.tsx'
 import {
@@ -17,6 +18,7 @@ export function Exhibit() {
   )
   if (!exhibit) return <NotFound />
   const wingTitle = WINGS[exhibit.wing].title
+  const next = nextExhibit(exhibit)
 
   return (
     <article className={`exhibit wing-${exhibit.wing}`}>
@@ -50,6 +52,21 @@ export function Exhibit() {
         {exhibit.slug === 'overfitting' && <TryThis />}
         {exhibit.slug === 'typing-rhythm' && <TypingTryThis />}
       </div>
+      {next && (
+        <section className="next-up" aria-labelledby="next-up-heading">
+          <h2 id="next-up-heading">Next up</h2>
+          <Link
+            className={`next-card wing-${next.wing}`}
+            to={`/${next.wing}/${next.slug}`}
+          >
+            <TileArt slug={next.slug} />
+            <span className="next-text">
+              <b>{next.title}</b>
+              <span>{next.line}</span>
+            </span>
+          </Link>
+        </section>
+      )}
       <nav className="wing-strip" aria-label={`Exhibits in ${wingTitle}`}>
         <Link to={`/${exhibit.wing}`}>Back to {wingTitle}</Link>
         <ol>
