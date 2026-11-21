@@ -70,6 +70,16 @@ li {
   text-wrap: pretty;
 }
 
+/* Read by screen readers, not shown. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 a {
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
