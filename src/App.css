@@ -1,10 +1,14 @@
-/* Layout from the Design Brief. One side gutter and one content width for
-   every page, so the header, page and footer all start at the same x. */
+/* Layout from the Design Brief. One side gutter for every page. The header
+   and footer run to the window's edges; the page content sits in a centred
+   1200px column (Roshan, Nov 21: a shared column looked like a box). */
 .frame,
+main {
+  padding-inline: max(16px, 4vw);
+}
+
 main {
   max-width: 1200px;
   margin-inline: auto;
-  padding-inline: max(16px, 4vw);
 }
 
 a {
