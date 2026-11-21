@@ -7,8 +7,8 @@ export function Home() {
         <div>
           <h1>See the math move</h1>
           <p>
-            Pick an exhibit below. Each one is a{' '}
-            <span className="nowrap">hands-on</span> experiment.
+            Play with the ideas behind data science. Pick an exhibit and try an
+            idea yourself.
           </p>
         </div>
         <div className="placeholder">Animated preview of the exhibits</div>

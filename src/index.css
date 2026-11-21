@@ -43,6 +43,12 @@ body {
   overflow-x: clip;
 }
 
+/* Below a short page, the window shows the footer colour, not a strip of
+   page background under the footer. */
+html {
+  background: var(--surface);
+}
+
 body {
   margin: 0;
   background: var(--bg);
