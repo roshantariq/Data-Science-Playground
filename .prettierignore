@@ -1,0 +1,3 @@
+# Local tool files, kept out of git through .git/info/exclude
+.claude/
+.impeccable/

@@ -165,10 +165,6 @@ p {
   max-width: 40ch;
 }
 
-.nowrap {
-  white-space: nowrap;
-}
-
 /* Wing header and tiles */
 .wing {
   display: grid;
@@ -1168,6 +1164,7 @@ p {
 
 .footer-inner > div {
   display: grid;
+  align-content: start;
   gap: 4px;
   min-width: 0;
 }
@@ -1186,6 +1183,11 @@ p {
 @media (max-width: 760px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Until the real hero preview exists, phones go straight to the tiles. */
+  .hero .placeholder {
+    display: none;
   }
 
   .tiles,
