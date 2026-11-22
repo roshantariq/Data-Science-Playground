@@ -56,8 +56,8 @@ export function About() {
         domain. The other sample series are made up.
       </p>
       <p>
-        Its recorded instruments come from two free collections. Flute,
-        clarinet, trumpet, cellos, organ, marimba and harp: Versilian Studios'{' '}
+        Its recorded instruments come from two free collections. Clarinet,
+        trumpet, cellos, organ, marimba and harp: Versilian Studios'{' '}
         <a href="https://github.com/sgossner/VSCO-2-CE">
           VSCO 2 Community Edition
         </a>

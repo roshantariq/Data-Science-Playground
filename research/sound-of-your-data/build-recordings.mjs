@@ -17,7 +17,6 @@ const [raw, out] = process.argv.slice(2)
 const SR = 44100
 // seconds kept, and whether loudness is set by the sustain (held) or peak
 const KIND = {
-  flute: { len: 2.6, held: true },
   clarinet: { len: 2.6, held: true },
   sax: { len: 2.6, held: true },
   trumpet: { len: 2.6, held: true },
@@ -177,7 +176,7 @@ for (const inst of readdirSync(raw)) {
     const f = pitch(y, Math.floor((kind.held ? 0.6 : 0.15) * SR))
     const detected = f ? 69 + 12 * Math.log2(f / 440) : NaN
     // Note numbers: the organ and piano are numbered by key. The rest are
-    // named by note, but some collections (the marimba, flute, clarinet,
+    // named by note, but some collections (the marimba, clarinet,
     // trumpet and cellos) name them an octave off, so the measured pitch
     // settles the octave.
     const base = file.replace(/\.\w+$/, '')

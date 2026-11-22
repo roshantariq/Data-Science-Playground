@@ -7,7 +7,7 @@ import tuning from './recordings/tuning.json'
 
 // Sustained instruments: their notes stop when the next one starts, and in
 // Slide they loop for as long as needed.
-const HELD = ['sax', 'flute', 'clarinet', 'trumpet', 'cello', 'organ'] as const
+const HELD = ['sax', 'clarinet', 'trumpet', 'cello', 'organ'] as const
 export type Recording =
   'piano' | 'marimba' | 'harp' | 'guitar' | (typeof HELD)[number]
 
@@ -19,7 +19,6 @@ export const CREDITS: Record<Recording, string> = {
     'Upright piano recorded by Simon Dalzell of Ivy Audio, from Versilian Studios’ VSCO 2 Community Edition (CC0).',
   marimba: VSCO,
   harp: VSCO,
-  flute: VSCO,
   clarinet: VSCO,
   trumpet: VSCO,
   cello: VSCO,
