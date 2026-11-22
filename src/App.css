@@ -1893,10 +1893,6 @@ p {
   accent-color: var(--action);
 }
 
-.split-sides {
-  font-weight: 600;
-}
-
 .split-count,
 .split-note {
   color: var(--text-muted);
@@ -1947,4 +1943,69 @@ p {
 
 .tree-list .said {
   color: var(--text-muted);
+}
+
+/* Counts in each region's corner, readable over the points. */
+.split-plot .count {
+  font: 600 18px var(--font-body);
+  fill: var(--text);
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.split-plot .count .circle {
+  fill: var(--machines-mark);
+}
+
+.split-plot .count .square {
+  fill: var(--feel-mark);
+}
+
+/* Small back-steps and data changes: plain underlined words, not buttons
+   that compete with Split and Race. */
+.text-button,
+.tree-bar button.text-button {
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--action);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.split-go,
+.split-race {
+  font: inherit;
+  font-weight: 600;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--on-action);
+  cursor: pointer;
+}
+
+.split-go {
+  padding: 6px 16px;
+}
+
+.split-race {
+  justify-self: start;
+  padding: 12px 28px;
+  font-size: var(--text-lg);
+}
+
+.split-score {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.split-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
 }
