@@ -151,8 +151,9 @@ export function gradient(land: Landscape, x: number, y: number) {
 export type Step = { x: number; y: number; z: number }
 
 // How a roll ended: at the lowest point, settled in a dip that isn't the
-// lowest, bouncing from wall to wall, or still rolling when time ran out.
-export type Outcome = 'lowest' | 'stuck' | 'bouncing' | 'slow'
+// lowest, stopped on a flat valley floor short of the lowest point (only on
+// "Your fit"), bouncing from wall to wall, or still rolling when time ran out.
+export type Outcome = 'lowest' | 'stuck' | 'floor' | 'bouncing' | 'slow'
 
 export type Roll = { steps: Step[]; outcome: Outcome }
 
@@ -200,7 +201,13 @@ function outcome(land: Landscape, steps: Step[], settled: boolean): Outcome {
   const end = steps[steps.length - 1]
   if (settled) {
     const floor = land.height(land.lowest.x, land.lowest.y)
-    return end.z - floor < 0.02 ? 'lowest' : 'stuck'
+    if (end.z - floor >= 0.02) return 'stuck'
+    // A fitted curve's valley floor can be so flat that the ball stops on
+    // it while still far from the lowest point. "Your fit" has just one
+    // lowest point, so being far from it means it fell short; elsewhere
+    // another dip can be just as low.
+    const away = Math.hypot(end.x - land.lowest.x, end.y - land.lowest.y)
+    return land.id === 'fit' && away > 0.1 ? 'floor' : 'lowest'
   }
   // Bouncing: most recent steps turn back on the one before.
   const last = steps.slice(-21)
