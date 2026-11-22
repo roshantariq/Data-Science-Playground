@@ -747,7 +747,8 @@ p {
   gap: 16px;
 }
 
-.slope-bar {
+.slope-bar,
+.tree-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -755,11 +756,13 @@ p {
   font-weight: 600;
 }
 
-.slope-bar span {
+.slope-bar span,
+.tree-bar span {
   margin-right: 4px;
 }
 
-.slope-bar button {
+.slope-bar button,
+.tree-bar button {
   font: inherit;
   padding: 6px 14px;
   border: 1.5px solid var(--text-muted);
@@ -769,7 +772,8 @@ p {
   cursor: pointer;
 }
 
-.slope-bar button[aria-pressed='true'] {
+.slope-bar button[aria-pressed='true'],
+.tree-bar button[aria-pressed='true'] {
   border-color: var(--action);
   background: var(--action);
   color: var(--on-action);
@@ -1707,4 +1711,240 @@ p {
   .wing-strip ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* Be the Algorithm. Phones: one column, the real tree's map after the
+   result. Wider: your map and the real tree's side by side, each at most
+   46% of the window tall so the controls stay on screen. */
+.split-area {
+  --plot-height: 46svh;
+  display: grid;
+  gap: 12px;
+  grid-template-areas: 'prompt' 'bars' 'mine' 'controls' 'result' 'theirs' 'diagrams';
+}
+
+@media (max-height: 650px) {
+  .split-area {
+    --plot-height: 38svh;
+  }
+}
+
+@media (min-width: 700px) {
+  .split-area {
+    grid-template-columns:
+      repeat(2, minmax(0, calc(var(--plot-height) * 5 / 3)))
+      1fr;
+    grid-template-areas:
+      'prompt prompt prompt' 'bars bars bars' 'mine theirs .'
+      'controls controls controls' 'result result result'
+      'diagrams diagrams diagrams';
+  }
+}
+
+@media (max-width: 699px) {
+  .split-theirs:has(.split-waiting) {
+    display: none;
+  }
+}
+
+.split-prompt {
+  grid-area: prompt;
+  max-width: 80ch;
+}
+
+.split-bars {
+  grid-area: bars;
+  display: grid;
+  gap: 8px;
+}
+
+.split-mine {
+  grid-area: mine;
+}
+
+.split-theirs {
+  grid-area: theirs;
+}
+
+.split-mine h3,
+.split-theirs h3 {
+  margin: 0 0 6px;
+  font-size: var(--text-base);
+}
+
+.split-plot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.split-mine .split-plot {
+  cursor: pointer;
+}
+
+.split-plot .cell {
+  fill: transparent;
+}
+
+.split-plot .cell.circle {
+  fill: color-mix(in srgb, var(--machines-mark) 12%, transparent);
+}
+
+.split-plot .cell.square {
+  fill: color-mix(in srgb, var(--feel-mark) 14%, transparent);
+}
+
+.split-plot .cell:focus-visible {
+  outline: none;
+  stroke: var(--action);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+}
+
+.split-plot .cuts {
+  fill: none;
+  stroke: var(--point);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.split-plot .outline {
+  fill: none;
+  stroke: var(--action);
+  stroke-width: 2.5px;
+  stroke-dasharray: 6 4;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.split-plot .draft {
+  stroke: var(--action);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.split-plot g {
+  pointer-events: none;
+}
+
+.split-plot circle.circle {
+  fill: var(--machines-mark);
+}
+
+.split-plot rect.square {
+  fill: var(--feel-mark);
+}
+
+/* Test points, shown after the race: hollow, so they stand apart. */
+.split-plot .test {
+  fill: var(--surface);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.split-plot circle.test {
+  fill: var(--surface);
+  stroke: var(--machines-mark);
+}
+
+.split-plot rect.test {
+  fill: var(--surface);
+  stroke: var(--feel-mark);
+}
+
+.split-waiting {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 3;
+  margin: 0;
+  border: 1.5px dashed var(--grid);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+}
+
+.split-controls {
+  grid-area: controls;
+  display: grid;
+  gap: 10px;
+}
+
+.split-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 640px;
+}
+
+.split-slider label {
+  font-weight: 600;
+  min-width: 5.5em;
+  font-variant-numeric: tabular-nums;
+}
+
+.split-slider input {
+  flex: 1;
+  accent-color: var(--action);
+}
+
+.split-sides {
+  font-weight: 600;
+}
+
+.split-count,
+.split-note {
+  color: var(--text-muted);
+}
+
+.split-result {
+  grid-area: result;
+}
+
+.split-result p {
+  max-width: 80ch;
+}
+
+.split-diagrams {
+  grid-area: diagrams;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+}
+
+.tree-diagram {
+  margin: 0;
+}
+
+.tree-diagram figcaption {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.tree-list {
+  font-variant-numeric: tabular-nums;
+}
+
+.tree-list ul {
+  list-style: none;
+  margin: 4px 0 0;
+  padding-left: 18px;
+  border-left: 1.5px solid var(--guide-strong);
+}
+
+.tree-list li {
+  margin: 4px 0;
+}
+
+.tree-list .ask {
+  font-weight: 600;
+}
+
+.tree-list .said {
+  color: var(--text-muted);
 }
