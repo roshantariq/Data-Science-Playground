@@ -25,8 +25,11 @@ export const NOTE_INSTRUMENTS = [
 ] as const satisfies Instrument<string>[]
 export const SLIDE_INSTRUMENTS = [
   { id: 'simple', name: 'Simple tone' },
-  { id: 'violin', name: 'Violin', recording: 'violin' },
+  { id: 'flute', name: 'Flute', recording: 'flute' },
+  { id: 'clarinet', name: 'Clarinet', recording: 'clarinet' },
   { id: 'sax', name: 'Saxophone', recording: 'sax' },
+  { id: 'trumpet', name: 'Trumpet', recording: 'trumpet' },
+  { id: 'cello', name: 'Cellos', recording: 'cello' },
   { id: 'organ', name: 'Organ', recording: 'organ' },
 ] as const satisfies Instrument<string>[]
 export type NoteInstrument = (typeof NOTE_INSTRUMENTS)[number]['id']
