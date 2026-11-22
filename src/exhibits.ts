@@ -62,7 +62,7 @@ export const EXHIBITS: Exhibit[] = [
     wing: 'feel',
     title: 'Sound of Your Data',
     line: 'Hear trends and outliers.',
-    open: false,
+    open: true,
   },
   {
     slug: 'regression-to-the-mean',

@@ -30,6 +30,10 @@ export function Privacy() {
           best round is saved in your browser as its score and stats only, with
           no timings or letters, and "Delete my data" removes it.
         </li>
+        <li>
+          <b>Sound of Your Data:</b> a CSV file you upload is read in your
+          browser and never sent anywhere. It's gone when you leave.
+        </li>
       </ul>
       <h2>Visitor statistics</h2>
       <p>

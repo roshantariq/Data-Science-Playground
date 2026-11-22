@@ -15,12 +15,23 @@ import {
   Explainer as SlopeExplainer,
   TryThis as SlopeTryThis,
 } from '../exhibits/gradient-descent/Explainer.tsx'
+import {
+  Explainer as SoundExplainer,
+  TryThis as SoundTryThis,
+} from '../exhibits/sound-of-your-data/Explainer.tsx'
 import { NotFound } from './NotFound.tsx'
 
-// The Ski Slope brings Three.js, so its code loads only when its page opens.
+// These exhibits bring big libraries or data, so their code loads only when
+// their page opens: Three.js for the Ski Slope, PapaParse and the sample
+// datasets for Sound of Your Data.
 const SkiSlope = lazy(() =>
   import('../exhibits/gradient-descent/SkiSlope.tsx').then((m) => ({
     default: m.SkiSlope,
+  })),
+)
+const SoundOfData = lazy(() =>
+  import('../exhibits/sound-of-your-data/SoundOfData.tsx').then((m) => ({
+    default: m.SoundOfData,
   })),
 )
 
@@ -49,6 +60,10 @@ export function Exhibit() {
         <Suspense fallback={<Spinner />}>
           <SkiSlope />
         </Suspense>
+      ) : exhibit.slug === 'sound-of-your-data' ? (
+        <Suspense fallback={<Spinner />}>
+          <SoundOfData />
+        </Suspense>
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
@@ -61,6 +76,8 @@ export function Exhibit() {
             <TypingExplainer />
           ) : exhibit.slug === 'gradient-descent' ? (
             <SlopeExplainer />
+          ) : exhibit.slug === 'sound-of-your-data' ? (
+            <SoundExplainer />
           ) : (
             <p>
               Explains the idea in one paragraph once you have tried the
@@ -71,6 +88,7 @@ export function Exhibit() {
         {exhibit.slug === 'overfitting' && <TryThis />}
         {exhibit.slug === 'typing-rhythm' && <TypingTryThis />}
         {exhibit.slug === 'gradient-descent' && <SlopeTryThis />}
+        {exhibit.slug === 'sound-of-your-data' && <SoundTryThis />}
       </div>
       {next && (
         <section className="next-up" aria-labelledby="next-up-heading">
