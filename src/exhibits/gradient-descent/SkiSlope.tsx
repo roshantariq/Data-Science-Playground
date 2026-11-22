@@ -69,7 +69,9 @@ export function SkiSlope() {
     fit ? fitLandscape(fit) : landscape('bowl'),
   )
   const [start, setStart] = useState(() => randomStart(land))
-  const [rate, setRate] = useState(3)
+  // A handed-over curve starts at learning rate 1, not 0.3: its valley floor
+  // is so flat that at 0.3 even momentum mostly runs out of time.
+  const [rate, setRate] = useState(fit ? RATES.indexOf(1) : 3)
   const [momentum, setMomentum] = useState(0)
   const [run, setRun] = useState<Roll | null>(null)
   const [shown, setShown] = useState(0) // steps of the run drawn so far
