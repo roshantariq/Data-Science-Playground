@@ -62,6 +62,13 @@ describe('pitch', () => {
     }
   })
 
+  it('moves the whole range by an octave', () => {
+    for (const f of [noteFreq, slideFreq]) {
+      expect(f(0, 0, 20, -1)).toBeCloseTo(130.81 / 2, 1)
+      expect(f(20, 0, 20, 1)).toBeCloseTo(130.81 * 16, 0)
+    }
+  })
+
   it('spreads pitches over the ordinary values, not the outliers', () => {
     const s = steps([10, 11, 9, 10, 12, 10, 95, 11, 9])
     expect(range(s)).toEqual({ lo: 9, hi: 12 })

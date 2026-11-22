@@ -1,6 +1,12 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { play, type Style } from './audio.ts'
+import { play, type Player, type Style, type Tone } from './audio.ts'
 import type { CsvResult } from './csv.worker.ts'
+import {
+  NOTE_INSTRUMENTS,
+  SLIDE_INSTRUMENTS,
+  type NoteInstrument,
+  type SlideInstrument,
+} from './instruments.ts'
 import samples from './samples.json'
 import { madeUp, MAX_BYTES, range, steps, type Dataset } from './sound.ts'
 
@@ -13,7 +19,13 @@ const STYLES: { id: Style; name: string }[] = [
   { id: 'notes', name: 'Notes' },
   { id: 'slide', name: 'Slide' },
 ]
+const PITCHES = [
+  { name: 'Low', octave: -1 },
+  { name: 'Middle', octave: 0 },
+  { name: 'High', octave: 1 },
+]
 const UPLOAD = 'upload'
+type Sound = { instrument: NoteInstrument | SlideInstrument; octave: number }
 
 const FAILED: Record<string, string> = {
   size: 'That file is bigger than 5 MB. Try a smaller one.',
@@ -33,13 +45,23 @@ export function SoundOfData() {
   const [col, setCol] = useState(0)
   const [style, setStyle] = useState<Style>('notes')
   const [speed, setSpeed] = useState(1)
+  const [instrument, setInstrument] = useState<{
+    notes: NoteInstrument
+    slide: SlideInstrument
+  }>({ notes: 'simple', slide: 'simple' })
+  const [pitch, setPitch] = useState(1)
+  const [tone, setTone] = useState<Tone>({ bass: 0, treble: 0, reverb: 0.2 })
   const [pos, setPos] = useState(-1) // the step being played, -1 before the start
   const [playing, setPlaying] = useState(false)
   const [problem, setProblem] = useState('')
-  const stop = useRef<(() => void) | null>(null)
+  const player = useRef<Player | null>(null)
   const file = useRef<HTMLInputElement>(null)
   const dataId = useId()
   const colId = useId()
+  const instrumentId = useId()
+  const bassId = useId()
+  const trebleId = useId()
+  const reverbId = useId()
 
   const all: Dataset[] = [...samples, ...made, ...(upload ? [upload] : [])]
   const data = all.find((d) => d.id === id) ?? all[0]
@@ -48,11 +70,11 @@ export function SoundOfData() {
   const { lo, hi } = range(s)
 
   const halt = () => {
-    stop.current?.()
-    stop.current = null
+    player.current?.stop()
+    player.current = null
     setPlaying(false)
   }
-  useEffect(() => () => stop.current?.(), [])
+  useEffect(() => () => player.current?.stop(), [])
 
   // Changing what plays starts again from the beginning.
   const choose = (next: () => void) => {
@@ -61,21 +83,42 @@ export function SoundOfData() {
     next()
   }
 
-  const start = () => {
+  const start = (
+    sound: Sound = {
+      instrument: instrument[style],
+      octave: PITCHES[pitch].octave,
+    },
+  ) => {
     const from = pos < 0 || pos >= s.length - 1 ? 0 : pos + 1
     setPlaying(true)
-    stop.current = play({
+    player.current = play({
       steps: s,
       from,
       style,
+      ...sound,
+      tone,
       perSecond: SPEEDS[speed].perSecond,
       onStep: setPos,
       onEnd: () => {
-        stop.current = null
+        player.current = null
         setPlaying(false)
       },
     })
   }
+
+  // A new instrument or pitch carries on from the same place.
+  const retune = (sound: Sound) => {
+    if (!player.current) return
+    player.current.stop()
+    start(sound)
+  }
+  const changeTone = (t: Partial<Tone>) => {
+    const next = { ...tone, ...t }
+    setTone(next)
+    player.current?.setTone(next)
+  }
+  const instruments = style === 'notes' ? NOTE_INSTRUMENTS : SLIDE_INSTRUMENTS
+  const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0')
 
   const read = async (f: File) => {
     setProblem('')
@@ -206,6 +249,24 @@ export function SoundOfData() {
             </button>
           ))}
         </div>
+        <div className="sound-field">
+          <label htmlFor={instrumentId}>Instrument</label>
+          <select
+            id={instrumentId}
+            value={instrument[style]}
+            onChange={(e) => {
+              const id = e.target.value as Sound['instrument']
+              setInstrument({ ...instrument, [style]: id })
+              retune({ instrument: id, octave: PITCHES[pitch].octave })
+            }}
+          >
+            {instruments.map((ins) => (
+              <option key={ins.id} value={ins.id}>
+                {ins.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div role="group" aria-label="Speed">
           <span>Speed</span>
           {SPEEDS.map((sp, i) => (
@@ -222,7 +283,7 @@ export function SoundOfData() {
         <button
           type="button"
           className="sound-play"
-          onClick={playing ? halt : start}
+          onClick={playing ? halt : () => start()}
         >
           {playing
             ? 'Pause'
@@ -230,6 +291,63 @@ export function SoundOfData() {
               ? 'Resume'
               : 'Play'}
         </button>
+      </div>
+      <div className="sound-tone">
+        <div role="group" aria-label="Pitch">
+          <span>Pitch</span>
+          {PITCHES.map((p, i) => (
+            <button
+              key={p.name}
+              type="button"
+              aria-pressed={pitch === i}
+              onClick={() => {
+                setPitch(i)
+                retune({ instrument: instrument[style], octave: p.octave })
+              }}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
+        <div className="sound-field">
+          <label htmlFor={bassId}>Bass {signed(tone.bass)}</label>
+          <input
+            id={bassId}
+            type="range"
+            min={-12}
+            max={12}
+            value={tone.bass}
+            aria-valuetext={signed(tone.bass)}
+            onChange={(e) => changeTone({ bass: Number(e.target.value) })}
+          />
+        </div>
+        <div className="sound-field">
+          <label htmlFor={trebleId}>Treble {signed(tone.treble)}</label>
+          <input
+            id={trebleId}
+            type="range"
+            min={-12}
+            max={12}
+            value={tone.treble}
+            aria-valuetext={signed(tone.treble)}
+            onChange={(e) => changeTone({ treble: Number(e.target.value) })}
+          />
+        </div>
+        <div className="sound-field">
+          <label htmlFor={reverbId}>
+            Reverb {Math.round(tone.reverb * 100)}%
+          </label>
+          <input
+            id={reverbId}
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={tone.reverb}
+            aria-valuetext={`${Math.round(tone.reverb * 100)}%`}
+            onChange={(e) => changeTone({ reverb: Number(e.target.value) })}
+          />
+        </div>
       </div>
       {data.credit && <p className="sound-credit">Data: {data.credit}</p>}
     </div>

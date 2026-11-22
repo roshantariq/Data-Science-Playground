@@ -103,17 +103,18 @@ const position = (v: number, lo: number, hi: number) =>
 
 const LOW = 130.81 // C3
 const SCALE = [0, 2, 4, 7, 9] // the five-note scale Typing Rhythm uses
-export const NOTES = 16 // C3 to C6, three octaves
+export const NOTES = 16 // C3 to C6, three octaves (C2 to C5 low, C4 to C7 high)
 
-// Notes: the value picks one of 16 notes on the five-note scale.
-export function noteFreq(v: number, lo: number, hi: number) {
+// Notes: the value picks one of 16 notes on the five-note scale. `octave`
+// moves the whole range down (-1) or up (+1) an octave.
+export function noteFreq(v: number, lo: number, hi: number, octave = 0) {
   const n = Math.round(position(v, lo, hi) * (NOTES - 1))
-  return LOW * 2 ** ((12 * Math.floor(n / 5) + SCALE[n % 5]) / 12)
+  return LOW * 2 ** (octave + (12 * Math.floor(n / 5) + SCALE[n % 5]) / 12)
 }
 
 // Slide: the value sets the pitch exactly, over the same three octaves.
-export function slideFreq(v: number, lo: number, hi: number) {
-  return LOW * 2 ** (3 * position(v, lo, hi))
+export function slideFreq(v: number, lo: number, hi: number, octave = 0) {
+  return LOW * 2 ** (octave + 3 * position(v, lo, hi))
 }
 
 // The columns of a CSV (rows of cells, first row maybe a header) that are
