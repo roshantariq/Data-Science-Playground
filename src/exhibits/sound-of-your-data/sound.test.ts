@@ -15,6 +15,7 @@ import {
   range,
   slideFreq,
   steps,
+  typingDataset,
 } from './sound.ts'
 
 const seeded = (seed: number) => () => {
@@ -146,5 +147,17 @@ describe('recordings', () => {
         expect(tuning[id as keyof typeof tuning]).toHaveProperty(midi)
       }
     }
+  })
+})
+
+describe('typingDataset', () => {
+  it('turns handed-over timings into a dataset, and rejects anything else', () => {
+    const gaps = [120, 150, 900, 130, 140, 135]
+    const holds = [80, 90, 85, 95, 88, 92]
+    const d = typingDataset({ name: 'Your typing', gaps, holds })
+    expect(d?.columns.map((c) => c.values)).toEqual([gaps, holds])
+    expect(typingDataset(null)).toBeNull()
+    expect(typingDataset({ name: 'x', gaps: [1, 2], holds })).toBeNull()
+    expect(typingDataset({ name: 'x', gaps: [...gaps, NaN], holds })).toBeNull()
   })
 })

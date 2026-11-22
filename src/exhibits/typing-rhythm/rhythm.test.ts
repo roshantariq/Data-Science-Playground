@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { bars, mistakes, noteFreq, pauseLimit, pct } from './rhythm.ts'
+import { bars, mistakes, noteFreq, pauseLimit, pct, timings } from './rhythm.ts'
 import type { Sentence } from './stats.ts'
 
 const k = (key: string, down: number, up: number) => ({ key, down, up })
@@ -60,4 +60,18 @@ test('notes rise from the left of the keyboard to the right, on a five-note scal
   expect(noteFreq('p')).toBeGreaterThan(noteFreq('o')!)
   expect(noteFreq('a')).toBe(noteFreq('q')) // same column, same note
   expect(noteFreq('Backspace')).toBeNull()
+})
+
+test('timings lists every gap and hold in typing order, sentence by sentence', () => {
+  const s = (keys: Sentence['keys']): Sentence => ({
+    target: '',
+    typed: '',
+    keys,
+  })
+  expect(
+    timings([
+      s([k('a', 0, 80), k('b', 150, 240), null, k('c', 400, Infinity)]),
+      s([k('d', 5000, 5090), k('e', 5200, 5260)]),
+    ]),
+  ).toEqual({ gaps: [150, 250, 200], holds: [80, 90, 90, 60] })
 })

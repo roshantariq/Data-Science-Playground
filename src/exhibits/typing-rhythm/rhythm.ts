@@ -74,3 +74,20 @@ export function noteFreq(key: string): number | null {
   if (c < 0) return null
   return 261.63 * 2 ** ((12 * Math.floor(c / 5) + SCALE[c % 5]) / 12)
 }
+
+// Every gap between keys and every hold time in the round, in typing order,
+// for the "Hear it as data" link to Sound of Your Data. Gaps restart with
+// each sentence; a key whose release was never seen has no hold time.
+export function timings(sentences: Sentence[]) {
+  const gaps: number[] = []
+  const holds: number[] = []
+  for (const s of sentences) {
+    const ks = s.keys.filter(Boolean) as Press[]
+    ks.forEach((k, i) => {
+      if (i) gaps.push(Math.round(k.down - ks[i - 1].down))
+      if (Number.isFinite(k.up))
+        holds.push(Math.round(Math.max(0, k.up - k.down)))
+    })
+  }
+  return { gaps, holds }
+}

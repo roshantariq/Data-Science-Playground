@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router'
 import { Spinner } from '../../components/Spinner.tsx'
 import { play, type Player, type Style, type Tone } from './audio.ts'
 import type { CsvResult } from './csv.worker.ts'
@@ -11,7 +12,15 @@ import {
 } from './instruments.ts'
 import { CREDITS, load, type Recorded } from './recordings.ts'
 import samples from './samples.json'
-import { madeUp, MAX_BYTES, range, steps, type Dataset } from './sound.ts'
+import {
+  madeUp,
+  MAX_BYTES,
+  range,
+  steps,
+  TYPING,
+  typingDataset,
+  type Dataset,
+} from './sound.ts'
 
 const SPEEDS = [
   { name: 'Slow', perSecond: 4 },
@@ -50,8 +59,19 @@ const fmt = (v: number) =>
 
 export function SoundOfData() {
   const [made] = useState(() => madeUp()) // new made-up data each load
+  // Timings handed over by Typing Rhythm's link, if any. They live only in
+  // this page's memory: the hand-over is then cleared, so a refresh starts
+  // as normal.
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [typing] = useState(() =>
+    typingDataset((location.state as { typing?: unknown } | null)?.typing),
+  )
+  useEffect(() => {
+    if (location.state) void navigate('.', { replace: true, state: null })
+  }, [location.state, navigate])
   const [upload, setUpload] = useState<Dataset | null>(null)
-  const [id, setId] = useState('nyc')
+  const [id, setId] = useState(typing ? TYPING : 'nyc')
   const [col, setCol] = useState(0)
   const [style, setStyle] = useState<Style>('notes')
   const [speed, setSpeed] = useState(1)
@@ -75,7 +95,12 @@ export function SoundOfData() {
   const trebleId = useId()
   const reverbId = useId()
 
-  const all: Dataset[] = [...samples, ...made, ...(upload ? [upload] : [])]
+  const all: Dataset[] = [
+    ...samples,
+    ...made,
+    ...(typing ? [typing] : []),
+    ...(upload ? [upload] : []),
+  ]
   const data = all.find((d) => d.id === id) ?? all[0]
   const column = data.columns[Math.min(col, data.columns.length - 1)]
   const s = steps(column.values)
@@ -216,6 +241,11 @@ export function SoundOfData() {
               </option>
             ))}
           </optgroup>
+          {typing && (
+            <optgroup label="From Typing Rhythm">
+              <option value={TYPING}>{typing.name}</option>
+            </optgroup>
+          )}
           {upload && (
             <optgroup label="Your file">
               <option value={UPLOAD}>{upload.name}</option>

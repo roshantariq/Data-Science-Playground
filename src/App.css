@@ -499,7 +499,7 @@ p {
   --plot-height: 46svh;
   display: grid;
   gap: 12px;
-  grid-template-areas: 'prompt' 'plot' 'controls' 'result' 'note' 'chart';
+  grid-template-areas: 'prompt' 'plot' 'controls' 'result' 'note' 'chart' 'link';
 }
 
 @media (max-height: 650px) {
@@ -515,7 +515,7 @@ p {
       1fr;
     grid-template-areas:
       'prompt prompt prompt' 'plot chart .' 'controls controls controls'
-      'result result result' 'note note note';
+      'result result result' 'note note note' 'link link link';
     align-items: end;
   }
 }
@@ -683,6 +683,10 @@ p {
 
 .degree-note {
   grid-area: note;
+}
+
+.point-area > .crossover {
+  grid-area: link;
 }
 
 .spot-prompt {
@@ -1019,6 +1023,15 @@ p {
 .sound-credit {
   font-size: var(--text-sm);
   max-width: 80ch;
+}
+
+/* Crossover links between exhibits */
+.crossover {
+  font-weight: 600;
+}
+
+.slope-fit {
+  max-width: 70ch;
 }
 
 /* Typing Rhythm */

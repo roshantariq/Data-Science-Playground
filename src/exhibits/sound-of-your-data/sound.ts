@@ -194,3 +194,25 @@ export function madeUp(rand: Rand = Math.random): Dataset[] {
     },
   ]
 }
+
+// Timings handed over by Typing Rhythm's "Hear it as data" link, checked
+// before use: gaps between keys and hold times, in milliseconds.
+export const TYPING = 'typing'
+export function typingDataset(v: unknown): Dataset | null {
+  if (typeof v !== 'object' || v === null) return null
+  const { name, gaps, holds } = v as Record<string, unknown>
+  const ok = (a: unknown): a is number[] =>
+    Array.isArray(a) &&
+    a.length >= 5 &&
+    a.length <= MAX_ROWS &&
+    a.every((x) => typeof x === 'number' && Number.isFinite(x) && x >= 0)
+  if (typeof name !== 'string' || !ok(gaps) || !ok(holds)) return null
+  return {
+    id: TYPING,
+    name: name.slice(0, 60),
+    columns: [
+      { name: 'Gap between keys (ms)', values: gaps },
+      { name: 'Time each key was held (ms)', values: holds },
+    ],
+  }
+}

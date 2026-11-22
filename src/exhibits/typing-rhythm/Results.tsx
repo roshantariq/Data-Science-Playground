@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Link } from 'react-router'
 import { canSave, deleteBest, loadBest, saveBest } from './best.ts'
 import {
   bars,
@@ -6,6 +7,7 @@ import {
   noteFreq,
   pauseLimit,
   pct,
+  timings,
   type Bar,
 } from './rhythm.ts'
 import { score, type Sentence, type Stat, type Stats } from './stats.ts'
@@ -311,6 +313,19 @@ function Timeline({
           >
             {playing ? 'Stop' : 'Play my rhythm'}
           </button>
+          {/* Opens Sound of Your Data with the whole round's timings. */}
+          <Link
+            className="crossover"
+            to="/feel/sound-of-your-data"
+            state={{
+              typing: {
+                name: sample ? "A sample typist's typing" : 'Your typing',
+                ...timings(sentences),
+              },
+            }}
+          >
+            Hear it as data
+          </Link>
           <span className="nav">
             <button
               type="button"
