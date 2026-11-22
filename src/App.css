@@ -891,23 +891,35 @@ p {
 
 .sound-pick,
 .sound-controls,
-.sound-controls [role='group'] {
+.sound-tone,
+.sound-field,
+.sound [role='group'] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
 }
 
-.sound-controls {
+.sound-controls,
+.sound-tone {
   gap: 12px 28px;
 }
 
-.sound-pick label,
-.sound-controls span {
+.sound label,
+.sound [role='group'] span {
   font-weight: 600;
 }
 
-.sound-pick select {
+.sound-tone label {
+  min-width: 6.5em;
+}
+
+.sound-tone input[type='range'] {
+  accent-color: var(--action);
+  width: 8em;
+}
+
+.sound select {
   font: inherit;
   padding: 6px 10px;
   border: 1.5px solid var(--text-muted);
@@ -918,7 +930,7 @@ p {
 }
 
 .sound-pick button,
-.sound-controls [role='group'] button {
+.sound [role='group'] button {
   font: inherit;
   padding: 6px 14px;
   border: 1.5px solid var(--text-muted);
@@ -928,7 +940,7 @@ p {
   cursor: pointer;
 }
 
-.sound-controls button[aria-pressed='true'] {
+.sound button[aria-pressed='true'] {
   border-color: var(--action);
   background: var(--action);
   color: var(--on-action);
