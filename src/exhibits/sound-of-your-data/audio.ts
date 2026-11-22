@@ -91,7 +91,7 @@ export function play({
       const i = next++
       const t = when(i)
       const s = steps[i]
-      if (glide) glide(slideFreq(s.value, lo, hi, octave), t, gap / 4)
+      if (glide) glide.to(slideFreq(s.value, lo, hi, octave), t, gap / 4)
       else
         strike(
           ctx,
@@ -106,18 +106,26 @@ export function play({
       later(() => onStep(i), t)
     }
     if (next >= steps.length) {
+      // At the end: fade the slide out, then close once the last notes and
+      // the reverb have died away.
       window.clearInterval(tick)
-      later(onEnd, when(steps.length))
+      const end = when(steps.length)
+      glide?.release(end)
+      later(onEnd, end)
+      later(close, end + 2.5)
     }
   }
   const tick = window.setInterval(schedule, 50)
   schedule()
 
+  function close() {
+    if (ctx.state !== 'closed') void ctx.close()
+  }
   return {
     stop: () => {
       window.clearInterval(tick)
       timers.forEach((t) => window.clearTimeout(t))
-      void ctx.close()
+      close()
     },
     setTone: (tone) => setTone(tone),
   }

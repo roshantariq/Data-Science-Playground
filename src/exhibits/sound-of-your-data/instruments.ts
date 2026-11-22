@@ -100,49 +100,124 @@ export function strike(
   }
 }
 
-// One held tone, starting at t at pitch f. Returns a function that glides
-// it to a new pitch.
+// One held tone, starting at t at pitch f. `to` glides it to a new pitch;
+// `release` fades it out.
+export type Glider = {
+  to: (f: number, t: number, speed: number) => void
+  release: (t: number) => void
+}
 export function glider(
   ctx: AudioContext,
   out: AudioNode,
   id: SlideInstrument,
   f: number,
   t: number,
-): (f: number, t: number, speed: number) => void {
+): Glider {
   const g = ctx.createGain()
   g.connect(out)
   g.gain.setValueAtTime(0, t)
-  let o: OscillatorNode
+  const oscs: OscillatorNode[] = []
+  const add = (type: OscillatorType | PeriodicWave, cents = 0) => {
+    const o = osc(ctx, f, t, type)
+    o.detune.value = cents
+    oscs.push(o)
+    return o
+  }
   let lp: BiquadFilterNode | null = null
   let track = 0 // how far above the note the filter sits
   let vol: number
   if (id === 'violin') {
-    o = osc(ctx, f, t, 'sawtooth')
-    vibrato(ctx, o, t + 0.2, 5.5, 15)
-    o.connect(filter(ctx, 'lowpass', 4000)).connect(g)
-    vol = 0.18
+    // A bright bowed string shaped by the wooden body's resonances, with a
+    // little bow noise and vibrato that grows in.
+    const o = add('sawtooth')
+    vibrato(ctx, o, t, 5.5, 18, 0.5)
+    const body = chain([
+      filter(ctx, 'highpass', 180),
+      filter(ctx, 'peaking', 290, 3, 6),
+      filter(ctx, 'peaking', 700, 2, 3),
+      filter(ctx, 'peaking', 2800, 1.2, 8),
+      filter(ctx, 'lowpass', 6000),
+    ])
+    o.connect(body.first)
+    body.last.connect(g)
+    breath(ctx, g, t, 3000, 0.03)
+    vol = 0.13
   } else if (id === 'sax') {
-    o = osc(ctx, f, t, 'sawtooth')
-    vibrato(ctx, o, t + 0.2, 4.5, 10)
+    // A reed's buzz through the horn's resonances, with breath.
+    const o = add('sawtooth')
+    vibrato(ctx, o, t, 4.5, 12, 0.6)
     track = 4
-    lp = filter(ctx, 'lowpass', f * track, 3)
-    o.connect(lp).connect(g)
-    vol = 0.2
+    lp = filter(ctx, 'lowpass', f * track, 1)
+    const horn = chain([
+      filter(ctx, 'peaking', 550, 2, 6),
+      filter(ctx, 'peaking', 1500, 2, 4),
+      lp,
+    ])
+    o.connect(horn.first)
+    horn.last.connect(g)
+    breath(ctx, g, t, 2000, 0.04)
+    vol = 0.18
   } else if (id === 'organ') {
-    // Several pipes at once: the note and some of its overtones.
-    o = osc(ctx, f, t, wave(ctx, [1, 0.7, 0.35, 0.5, 0, 0.25, 0, 0.2]))
-    o.connect(g)
-    vol = 0.2
+    // Two ranks of pipes, a hair apart, through a slow wobble like a
+    // rotating speaker.
+    const pipes = wave(ctx, [1, 0.7, 0.35, 0.5, 0, 0.25, 0, 0.2])
+    const wobble = ctx.createGain()
+    const lfo = osc(ctx, 6, t)
+    const depth = ctx.createGain()
+    depth.gain.value = 0.15
+    lfo.connect(depth).connect(wobble.gain)
+    add(pipes).connect(wobble)
+    add(pipes, 7).connect(wobble)
+    wobble.connect(g)
+    vol = 0.11
   } else {
-    o = osc(ctx, f, t)
-    o.connect(g)
+    add('sine').connect(g)
     vol = 0.22
   }
-  g.gain.linearRampToValueAtTime(vol, t + 0.05)
-  return (f, t, speed) => {
-    o.frequency.setTargetAtTime(f, t, speed)
-    lp?.frequency.setTargetAtTime(Math.min(f * track, 10000), t, speed)
+  g.gain.linearRampToValueAtTime(vol, t + 0.08)
+  return {
+    to: (f, t, speed) => {
+      for (const o of oscs) o.frequency.setTargetAtTime(f, t, speed)
+      lp?.frequency.setTargetAtTime(Math.min(f * track, 10000), t, speed)
+    },
+    release: (t) => g.gain.setTargetAtTime(0, t, 0.08),
   }
+}
+
+// Connects filters one after another.
+function chain(nodes: AudioNode[]) {
+  for (let i = 1; i < nodes.length; i++) nodes[i - 1].connect(nodes[i])
+  return { first: nodes[0], last: nodes[nodes.length - 1] }
+}
+
+// A soft hiss around one pitch: bow noise or breath.
+function breath(
+  ctx: AudioContext,
+  out: AudioNode,
+  t: number,
+  f: number,
+  vol: number,
+) {
+  const src = ctx.createBufferSource()
+  src.buffer = noise(ctx.sampleRate)
+  src.loop = true
+  const g = ctx.createGain()
+  g.gain.value = vol
+  src
+    .connect(filter(ctx, 'bandpass', f, 1))
+    .connect(g)
+    .connect(out)
+  src.start(t)
+}
+
+let hiss: AudioBuffer | null = null
+function noise(sampleRate: number) {
+  if (hiss?.sampleRate !== sampleRate) {
+    hiss = new AudioBuffer({ length: sampleRate * 2, sampleRate })
+    const d = hiss.getChannelData(0)
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
+  }
+  return hiss
 }
 
 function osc(
@@ -159,26 +234,35 @@ function osc(
   return o
 }
 
-function filter(ctx: AudioContext, type: BiquadFilterType, f: number, q = 0.7) {
+function filter(
+  ctx: AudioContext,
+  type: BiquadFilterType,
+  f: number,
+  q = 0.7,
+  gain = 0,
+) {
   const b = ctx.createBiquadFilter()
   b.type = type
   b.frequency.value = f
   b.Q.value = q
+  b.gain.value = gain
   return b
 }
 
 // Wobbles the pitch by `cents` (a hundredth of a semitone), `rate` times a
-// second.
+// second, growing in over `grow` seconds.
 function vibrato(
   ctx: AudioContext,
   o: OscillatorNode,
   t: number,
   rate: number,
   cents: number,
+  grow = 0,
 ) {
   const lfo = osc(ctx, rate, t)
   const depth = ctx.createGain()
-  depth.gain.value = cents
+  depth.gain.setValueAtTime(grow ? 0 : cents, t)
+  if (grow) depth.gain.linearRampToValueAtTime(cents, t + grow)
   lfo.connect(depth).connect(o.detune)
   o.addEventListener('ended', () => lfo.stop())
 }
