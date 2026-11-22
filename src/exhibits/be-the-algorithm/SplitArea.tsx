@@ -74,6 +74,7 @@ type PlotProps = {
   name: string
   picked?: string | null
   draft?: { axis: Axis; at: number } | null
+  sides?: [number, number][] | null // counts on each side of the draft line
   onPick?: (path: string) => void
   svgRef?: React.Ref<SVGSVGElement>
   handlers?: React.SVGProps<SVGSVGElement>
@@ -85,6 +86,7 @@ function Plot({
   name,
   picked,
   draft,
+  sides,
   onPick,
   svgRef,
   handlers,
@@ -148,7 +150,34 @@ function Plot({
           <Marker key={i} d={d} />
         ))}
       </g>
+      <g aria-hidden="true">
+        {cells.map((c, i) =>
+          c === sel && draft && sides ? null : (
+            <Count key={paths[i]} box={c.box} counts={c.counts} />
+          ),
+        )}
+        {sel &&
+          draft &&
+          sides &&
+          halves(sel.box, draft.axis, draft.at).map((b, i) => (
+            <Count key={i} box={b} counts={sides[i]} />
+          ))}
+      </g>
     </svg>
+  )
+}
+
+// A region's training counts in its top-left corner, if it has room.
+function Count({ box, counts }: { box: Box; counts: [number, number] }) {
+  const w = sx(box.x1) - sx(box.x0)
+  const h = sy(box.y0) - sy(box.y1)
+  if (w < 84 || h < 30) return null
+  return (
+    <text className="count" x={sx(box.x0) + 8} y={sy(box.y1) + 22}>
+      {counts[0]}
+      <tspan className="circle"> ●</tspan> {counts[1]}
+      <tspan className="square"> ■</tspan>
+    </text>
   )
 }
 
@@ -300,6 +329,19 @@ export function SplitArea() {
     setPicked(null)
   }
 
+  // The training score as it is, or as it would be with the line placed.
+  const trial = canCut ? splitLeaf(mine, picked!, axis, at) : mine
+  const score = accuracy(trial, train, train)
+  const placing = !raced && !!box && left > 0
+
+  const startRace = () => {
+    setRaced(true)
+    setPicked(null)
+    requestAnimationFrame(() =>
+      result.current?.scrollIntoView({ block: 'nearest' }),
+    )
+  }
+
   const words =
     axis === 'x' ? (['Left', 'Right'] as const) : (['Bottom', 'Top'] as const)
 
@@ -333,6 +375,13 @@ export function SplitArea() {
               {p.name}
             </button>
           ))}
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => newData(pattern)}
+          >
+            New points
+          </button>
         </div>
         <div className="tree-bar" role="group" aria-label="Splits allowed">
           <span>Splits allowed</span>
@@ -359,6 +408,7 @@ export function SplitArea() {
           name={`Your map, with ${used} ${used === 1 ? 'split' : 'splits'}. Tap a region to split it, then drag the line.`}
           picked={raced ? null : picked}
           draft={canCut ? { axis, at } : null}
+          sides={canCut ? sides : null}
           onPick={raced || left <= 0 ? undefined : (p) => pick(p)}
           svgRef={svg}
           handlers={{
@@ -382,7 +432,7 @@ export function SplitArea() {
         )}
       </div>
       <div className="split-controls">
-        {!raced && box && left > 0 && (
+        {placing && (
           <>
             <div className="tree-bar" role="group" aria-label="Line direction">
               <span>Cut</span>
@@ -414,6 +464,9 @@ export function SplitArea() {
                   value={at}
                   onChange={(e) => setAt(Number(e.target.value))}
                 />
+                <button type="button" className="split-go" onClick={cut}>
+                  Split
+                </button>
               </div>
             ) : (
               <p className="split-note">
@@ -421,44 +474,29 @@ export function SplitArea() {
               </p>
             )}
             {sides && canCut && (
-              <p className="split-sides" aria-live="polite">
+              <p className="visually-hidden" aria-live="polite">
                 {words[0]}: {shapes(sides[0])}. {words[1]}: {shapes(sides[1])}.
               </p>
             )}
           </>
         )}
-        <p className="split-count">
-          {raced
-            ? `You used ${used} of ${budget} splits.`
-            : left > 0
-              ? `${used} of ${budget} splits used.${box ? '' : ' Tap a region to split it.'}`
-              : `All ${budget} splits used. Race the tree, or undo one.`}
-        </p>
-        <div className="slope-buttons">
-          {!raced && box && left > 0 && (
-            <button type="button" onClick={cut} disabled={!canCut}>
-              Split
-            </button>
-          )}
-          {!raced && (
+        {!raced && (
+          <p className="split-score" aria-live="polite">
+            Training points right: {pct(score)}
+          </p>
+        )}
+        <div className="split-count">
+          <p>
+            {raced
+              ? `You used ${used} of ${budget} splits.`
+              : left > 0
+                ? `${used} of ${budget} splits used.${box ? '' : ' Tap a region to split it.'}`
+                : `All ${budget} splits used. Race the tree, or undo one.`}
+          </p>
+          {!raced && used > 0 && (
             <button
               type="button"
-              disabled={used === 0}
-              onClick={() => {
-                setRaced(true)
-                setPicked(null)
-                requestAnimationFrame(() =>
-                  result.current?.scrollIntoView({ block: 'nearest' }),
-                )
-              }}
-            >
-              Race the tree
-            </button>
-          )}
-          {!raced && (
-            <button
-              type="button"
-              disabled={used === 0}
+              className="text-button"
               onClick={() => {
                 setHistory(history.slice(0, -1))
                 setPicked(null)
@@ -467,13 +505,17 @@ export function SplitArea() {
               Undo
             </button>
           )}
-          <button type="button" onClick={reset} disabled={used === 0}>
-            {raced ? 'Try again' : 'Start over'}
-          </button>
-          <button type="button" onClick={() => newData(pattern)}>
-            New points
-          </button>
+          {used > 0 && (
+            <button type="button" className="text-button" onClick={reset}>
+              {raced ? 'Try again' : 'Start over'}
+            </button>
+          )}
         </div>
+        {!raced && used > 0 && (
+          <button type="button" className="split-race" onClick={startRace}>
+            Race the tree
+          </button>
+        )}
       </div>
       <div ref={result} className="split-result" aria-live="polite">
         {raced && theirs && (
