@@ -25,7 +25,7 @@ The credits are shown under the chart in the exhibit and on the About page.
 `src/exhibits/sound-of-your-data/recordings/`, one folder per instrument,
 each file named by its MIDI note number, plus `tuning.json` (how many cents
 each recording is off; the exhibit corrects for it). It finds where each
-note starts, keeps 2.6 s of held notes (flute, clarinet, saxophone,
+note starts, keeps 2.6 s of held notes (clarinet, saxophone,
 trumpet, cellos, organ) or up to 2.2 s of struck ones, fades the ends,
 evens out the loudness, measures the pitch, and encodes at 80 kbps mono.
 Held notes also have their loudness evened out after the first 0.3 s, so a
@@ -34,8 +34,7 @@ off, so the measured pitch sets the octave. Built on Nov 22, 2026.
 
 | Instrument     | Notes kept                                                                                                                                    | Source                                                                                     | Terms                                                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| Flute          | `Woodwinds/Flute/susvib/LDFlute_susvib_{C3,E3,A3,C4,E4,A4,C5,E5,A5,C6}_v1_1.wav` (named an octave low)                                        | [VSCO 2 Community Edition](https://github.com/sgossner/VSCO-2-CE)                          | CC0                                                                 |
-| Clarinet       | `Woodwinds/Clarinet/susLong/DCClar_susLong_{D2,A#2,F3,A#3,D4,A#4,D5}_v3_rr1_sum.wav` (named an octave low; F#5 left out, it measures as F5)   | VSCO 2 CE                                                                                  | CC0                                                                 |
+| Clarinet       | `Woodwinds/Clarinet/susLong/DCClar_susLong_{D2,A#2,F3,A#3,D4,A#4,D5}_v3_rr1_sum.wav` (named an octave low; F#5 left out, it measures as F5)   | [VSCO 2 Community Edition](https://github.com/sgossner/VSCO-2-CE)                          | CC0                                                                 |
 | Trumpet        | `Brass/Trumpet/susvib/Sum_SHTrumpet_susvib_{F2,A2,D#3,G3,D4,F4,A4,C5}_v2_rr1.wav` (named an octave low)                                       | VSCO 2 CE                                                                                  | CC0                                                                 |
 | Cellos         | `Strings/Cello Section/susvib/susvib_{C1,G1,D2,A2,E3,B3,F4}_v3_1.wav` (named an octave low)                                                   | VSCO 2 CE                                                                                  | CC0                                                                 |
 | Organ          | `Keys/Organ/Loud/Rode_Man3Open_{01,10,19,28,37,46,55,61}.wav` (key n is MIDI 35 + n)                                                          | VSCO 2 CE                                                                                  | CC0                                                                 |
