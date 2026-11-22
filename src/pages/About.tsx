@@ -42,6 +42,19 @@ export function About() {
         , CHI 2018. It is used here for non-commercial purposes with credit, as
         its licence asks.
       </p>
+      <p>
+        Sound of Your Data plays three real datasets. Titanic passengers: data
+        obtained from <a href="http://hbiostat.org/data">hbiostat.org/data</a>{' '}
+        courtesy of the Vanderbilt University Department of Biostatistics
+        (titanic3, Thomas Cason and Frank Harrell). Iris flowers: R. A. Fisher
+        (1936), from the{' '}
+        <a href="https://doi.org/10.24432/C56C76">
+          UCI Machine Learning Repository
+        </a>{' '}
+        under CC BY 4.0. New York temperatures: NOAA's Global Historical
+        Climatology Network Daily, Central Park station, which is in the public
+        domain. The other sample series are made up.
+      </p>
       <h2>Your data</h2>
       <p>
         Everything runs in your browser, and nothing you type, draw or upload is

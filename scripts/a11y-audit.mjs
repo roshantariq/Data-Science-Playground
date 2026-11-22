@@ -17,6 +17,7 @@ const PAGES = [
   '/machines/overfitting',
   '/machines/gradient-descent',
   '/feel/typing-rhythm',
+  '/feel/sound-of-your-data',
   '/about',
   '/privacy',
   '/no-such-page',
@@ -26,6 +27,7 @@ const TAB_PAGES = [
   '/machines/overfitting',
   '/machines/gradient-descent',
   '/feel/typing-rhythm',
+  '/feel/sound-of-your-data',
   '/about',
 ]
 const TAGS = [
@@ -241,9 +243,20 @@ for (const e of pageErrors) problems.push(`page error: ${e}`)
 ws.close()
 browser.kill()
 await server.close()
-await wait(500)
-rmSync(profile, { recursive: true, force: true, maxRetries: 5 })
 console.log(
   problems.length ? problems.join('\n') : 'No accessibility problems found.',
 )
+// Best effort: the browser's helper processes can hold the throwaway
+// profile open for a moment after it closes.
+await wait(500)
+try {
+  rmSync(profile, {
+    recursive: true,
+    force: true,
+    maxRetries: 5,
+    retryDelay: 300,
+  })
+} catch {
+  console.warn(`Couldn't remove the temporary browser profile at ${profile}.`)
+}
 process.exit(problems.length ? 1 : 0)

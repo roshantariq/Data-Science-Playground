@@ -883,6 +883,121 @@ p {
   vector-effect: non-scaling-stroke;
 }
 
+/* Sound of Your Data */
+.sound {
+  display: grid;
+  gap: 16px;
+}
+
+.sound-pick,
+.sound-controls,
+.sound-controls [role='group'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.sound-controls {
+  gap: 12px 28px;
+}
+
+.sound-pick label,
+.sound-controls span {
+  font-weight: 600;
+}
+
+.sound-pick select {
+  font: inherit;
+  padding: 6px 10px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  max-width: 100%;
+}
+
+.sound-pick button,
+.sound-controls [role='group'] button {
+  font: inherit;
+  padding: 6px 14px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sound-controls button[aria-pressed='true'] {
+  border-color: var(--action);
+  background: var(--action);
+  color: var(--on-action);
+}
+
+.sound-play {
+  font: inherit;
+  font-weight: 600;
+  min-width: 6em;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--action);
+  color: var(--on-action);
+  cursor: pointer;
+}
+
+.sound-problem {
+  font-weight: 600;
+}
+
+.sound-chart {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.sound-chart figcaption {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.sound-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--surface);
+  border: 1px solid var(--grid);
+  border-radius: var(--radius);
+}
+
+.sound-chart rect {
+  fill: var(--mark);
+}
+
+.sound-chart rect.now {
+  fill: var(--text);
+}
+
+.sound-chart .outlier {
+  fill: var(--text);
+}
+
+.sound-chart .playhead {
+  stroke: var(--action);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.sound-summary,
+.sound-credit {
+  color: var(--text-muted);
+}
+
+.sound-credit {
+  font-size: var(--text-sm);
+  max-width: 80ch;
+}
+
 /* Typing Rhythm */
 .typing {
   display: grid;
