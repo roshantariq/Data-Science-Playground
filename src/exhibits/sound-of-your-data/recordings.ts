@@ -5,22 +5,27 @@
 import type { Glider } from './instruments.ts'
 import tuning from './recordings/tuning.json'
 
-export type Recording =
-  'piano' | 'marimba' | 'harp' | 'guitar' | 'sax' | 'violin' | 'organ'
 // Sustained instruments: their notes stop when the next one starts, and in
 // Slide they loop for as long as needed.
-const HELD: Recording[] = ['sax', 'violin', 'organ']
+const HELD = ['sax', 'flute', 'clarinet', 'trumpet', 'cello', 'organ'] as const
+export type Recording =
+  'piano' | 'marimba' | 'harp' | 'guitar' | (typeof HELD)[number]
 
+const VSCO = 'Versilian Studios’ VSCO 2 Community Edition (CC0).'
+const IOWA =
+  'University of Iowa Electronic Music Studios, Musical Instrument Samples.'
 export const CREDITS: Record<Recording, string> = {
   piano:
     'Upright piano recorded by Simon Dalzell of Ivy Audio, from Versilian Studios’ VSCO 2 Community Edition (CC0).',
-  marimba: 'Versilian Studios’ VSCO 2 Community Edition (CC0).',
-  harp: 'Versilian Studios’ VSCO 2 Community Edition (CC0).',
-  violin: 'Versilian Studios’ VSCO 2 Community Edition (CC0).',
-  organ: 'Versilian Studios’ VSCO 2 Community Edition (CC0).',
-  sax: 'University of Iowa Electronic Music Studios, Musical Instrument Samples.',
-  guitar:
-    'University of Iowa Electronic Music Studios, Musical Instrument Samples.',
+  marimba: VSCO,
+  harp: VSCO,
+  flute: VSCO,
+  clarinet: VSCO,
+  trumpet: VSCO,
+  cello: VSCO,
+  organ: VSCO,
+  sax: IOWA,
+  guitar: IOWA,
 }
 
 const FILES = import.meta.glob<string>('./recordings/*/*.mp3', {
@@ -81,7 +86,7 @@ export function strikeRecorded(
   src.playbackRate.value = rate(n, m)
   const g = ctx.createGain()
   src.connect(g).connect(out)
-  const held = HELD.includes(rec.id)
+  const held = (HELD as readonly Recording[]).includes(rec.id)
   g.gain.setValueAtTime(vol * (held ? 4.5 : 1.35), t)
   // Held notes stop as the next begins; struck ones ring on a little.
   if (held) g.gain.setTargetAtTime(0, t + Math.max(0.08, gap * 0.85), 0.05)
@@ -133,7 +138,13 @@ export function gliderRecorded(
   all.gain.value = 0.75
   all.connect(out)
   let m = midiOf(f)
-  const voice = (n: Note, t: number, from: number, offset: number) => {
+  const voice = (
+    n: Note,
+    t: number,
+    from: number,
+    offset: number,
+    fade: number,
+  ) => {
     const src = ctx.createBufferSource()
     src.buffer = loopable(n.buffer)
     src.loop = true
@@ -142,12 +153,12 @@ export function gliderRecorded(
     src.playbackRate.setValueAtTime(rate(n, from), t)
     const g = ctx.createGain()
     g.gain.setValueAtTime(0, t)
-    g.gain.linearRampToValueAtTime(1, t + 0.06)
+    g.gain.linearRampToValueAtTime(1, t + fade)
     src.connect(g).connect(all)
     src.start(t, offset)
     return { n, src, g }
   }
-  let now = voice(nearest(rec.notes, m), t, m, 0)
+  let now = voice(nearest(rec.notes, m), t, m, 0, 0.06)
   return {
     to: (f, t, speed) => {
       const next = midiOf(f)
@@ -156,9 +167,9 @@ export function gliderRecorded(
         n !== now.n &&
         Math.abs(next - now.n.pitch) - Math.abs(next - n.pitch) > 1
       ) {
-        now.g.gain.setTargetAtTime(0, t, 0.03)
+        now.g.gain.setTargetAtTime(0, t, 0.008)
         now.src.stop(t + 0.3)
-        now = voice(n, t, m, LOOP.start - 0.2)
+        now = voice(n, t, m, LOOP.start - 0.2, 0.02)
       }
       now.src.playbackRate.setTargetAtTime(rate(now.n, next), t, speed)
       m = next

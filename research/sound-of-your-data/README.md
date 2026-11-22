@@ -25,13 +25,19 @@ The credits are shown under the chart in the exhibit and on the About page.
 `src/exhibits/sound-of-your-data/recordings/`, one folder per instrument,
 each file named by its MIDI note number, plus `tuning.json` (how many cents
 each recording is off; the exhibit corrects for it). It finds where each
-note starts, keeps 2.6 s of held notes (violin, saxophone, organ) or up to
-2.2 s of struck ones, fades the ends, evens out the loudness, measures the
-pitch, and encodes at 80 kbps mono. Built on Nov 22, 2026.
+note starts, keeps 2.6 s of held notes (flute, clarinet, saxophone,
+trumpet, cellos, organ) or up to 2.2 s of struck ones, fades the ends,
+evens out the loudness, measures the pitch, and encodes at 80 kbps mono.
+Held notes also have their loudness evened out after the first 0.3 s, so a
+loop of their middle doesn't pulse. Some collections name notes an octave
+off, so the measured pitch sets the octave. Built on Nov 22, 2026.
 
 | Instrument     | Notes kept                                                                                                                                    | Source                                                                                     | Terms                                                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| Violin         | `Strings/Solo Violin/Arco Vib/LLVln_ArcoVib_{G3,C4,G4,C5,G5,C6,G6}_f.wav`                                                                     | [VSCO 2 Community Edition](https://github.com/sgossner/VSCO-2-CE)                          | CC0                                                                 |
+| Flute          | `Woodwinds/Flute/susvib/LDFlute_susvib_{C3,E3,A3,C4,E4,A4,C5,E5,A5,C6}_v1_1.wav` (named an octave low)                                        | [VSCO 2 Community Edition](https://github.com/sgossner/VSCO-2-CE)                          | CC0                                                                 |
+| Clarinet       | `Woodwinds/Clarinet/susLong/DCClar_susLong_{D2,A#2,F3,A#3,D4,A#4,D5}_v3_rr1_sum.wav` (named an octave low; F#5 left out, it measures as F5)   | VSCO 2 CE                                                                                  | CC0                                                                 |
+| Trumpet        | `Brass/Trumpet/susvib/Sum_SHTrumpet_susvib_{F2,A2,D#3,G3,D4,F4,A4,C5}_v2_rr1.wav` (named an octave low)                                       | VSCO 2 CE                                                                                  | CC0                                                                 |
+| Cellos         | `Strings/Cello Section/susvib/susvib_{C1,G1,D2,A2,E3,B3,F4}_v3_1.wav` (named an octave low)                                                   | VSCO 2 CE                                                                                  | CC0                                                                 |
 | Organ          | `Keys/Organ/Loud/Rode_Man3Open_{01,10,19,28,37,46,55,61}.wav` (key n is MIDI 35 + n)                                                          | VSCO 2 CE                                                                                  | CC0                                                                 |
 | Piano          | `Keys/Upright Piano/Player_dyn2_rr1_{008,012,...,036}.wav` (file n is MIDI 21 + 2n, per its MappingChart.txt)                                 | VSCO 2 CE, recorded by Simon Dalzell of Ivy Audio                                          | CC0; credit to both encouraged                                      |
 | Marimba        | `Percussion/Marimba/Marimba_hit_Outrigger_{C2,G2,B2,F3,C4,G4,B4,F5,C6}_loud_01.wav` (named an octave low: measured C2 is MIDI 48)             | VSCO 2 CE                                                                                  | CC0                                                                 |
@@ -40,7 +46,7 @@ pitch, and encodes at 80 kbps mono. Built on Nov 22, 2026.
 | Guitar         | `MIS/Piano_Other/guitar/Guitar.mf.{sulE.E2B2,sulA.A2B2,sulD.D3B3,sulG.G3B3,sulB.C4B4,sul_E.E4B4,sul_E.C5B5}.mono.aif`, first note of each run | University of Iowa                                                                         | as above                                                            |
 
 To rebuild, download those files into `<folder>/<instrument>/`, named by
-note (`C4.wav`, `Bb4.aif`; organ and piano by their number: `10.wav`,
+note (`C4.wav`, `Bb4.aif`, `A#2.wav`; organ and piano by their number: `10.wav`,
 `008.wav`; guitar by the run's first note: `E2.aif`), then run:
 
 ```
