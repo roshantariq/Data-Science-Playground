@@ -19,6 +19,11 @@ import {
   Explainer as SoundExplainer,
   TryThis as SoundTryThis,
 } from '../exhibits/sound-of-your-data/Explainer.tsx'
+import {
+  Explainer as TreeExplainer,
+  TryThis as TreeTryThis,
+} from '../exhibits/be-the-algorithm/Explainer.tsx'
+import { SplitArea } from '../exhibits/be-the-algorithm/SplitArea.tsx'
 import { NotFound } from './NotFound.tsx'
 
 // These exhibits bring big libraries or data, so their code loads only when
@@ -64,6 +69,8 @@ export function Exhibit() {
         <Suspense fallback={<Spinner />}>
           <SoundOfData />
         </Suspense>
+      ) : exhibit.slug === 'be-the-algorithm' ? (
+        <SplitArea />
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
@@ -78,6 +85,8 @@ export function Exhibit() {
             <SlopeExplainer />
           ) : exhibit.slug === 'sound-of-your-data' ? (
             <SoundExplainer />
+          ) : exhibit.slug === 'be-the-algorithm' ? (
+            <TreeExplainer />
           ) : (
             <p>
               Explains the idea in one paragraph once you have tried the
@@ -89,6 +98,7 @@ export function Exhibit() {
         {exhibit.slug === 'typing-rhythm' && <TypingTryThis />}
         {exhibit.slug === 'gradient-descent' && <SlopeTryThis />}
         {exhibit.slug === 'sound-of-your-data' && <SoundTryThis />}
+        {exhibit.slug === 'be-the-algorithm' && <TreeTryThis />}
       </div>
       {next && (
         <section className="next-up" aria-labelledby="next-up-heading">

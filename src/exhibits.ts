@@ -41,7 +41,7 @@ export const EXHIBITS: Exhibit[] = [
     wing: 'machines',
     title: 'Be the Algorithm',
     line: 'Split the data by hand.',
-    open: false,
+    open: true,
   },
   {
     slug: 'neural-net-peek',
