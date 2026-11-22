@@ -55,6 +55,20 @@ export function About() {
         Climatology Network Daily, Central Park station, which is in the public
         domain. The other sample series are made up.
       </p>
+      <p>
+        Its recorded instruments come from two free collections. Violin, organ,
+        marimba and harp: Versilian Studios'{' '}
+        <a href="https://github.com/sgossner/VSCO-2-CE">
+          VSCO 2 Community Edition
+        </a>
+        , recorded by Sam Gossner and Simon Dalzell, released under CC0; the
+        upright piano in it was recorded by Simon Dalzell of Ivy Audio.
+        Saxophone and guitar: the{' '}
+        <a href="https://theremin.music.uiowa.edu/MIS.html">
+          University of Iowa Electronic Music Studios
+        </a>
+        ' Musical Instrument Samples, by Lawrence Fritts.
+      </p>
       <h2>Your data</h2>
       <p>
         Everything runs in your browser, and nothing you type, draw or upload is

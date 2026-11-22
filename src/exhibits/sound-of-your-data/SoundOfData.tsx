@@ -1,12 +1,15 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { Spinner } from '../../components/Spinner.tsx'
 import { play, type Player, type Style, type Tone } from './audio.ts'
 import type { CsvResult } from './csv.worker.ts'
 import {
   NOTE_INSTRUMENTS,
   SLIDE_INSTRUMENTS,
+  type Instrument,
   type NoteInstrument,
   type SlideInstrument,
 } from './instruments.ts'
+import { CREDITS, load, type Recorded } from './recordings.ts'
 import samples from './samples.json'
 import { madeUp, MAX_BYTES, range, steps, type Dataset } from './sound.ts'
 
@@ -33,7 +36,14 @@ const FAILED: Record<string, string> = {
   numbers:
     "No column in that file is mostly numbers, so there's nothing to play.",
   unreadable: "That file couldn't be read as a CSV.",
+  instrument:
+    "That instrument couldn't be loaded. Check your connection and try again.",
 }
+
+const listOf = (style: Style): readonly Instrument[] =>
+  style === 'notes' ? NOTE_INSTRUMENTS : SLIDE_INSTRUMENTS
+const recordingOf = (style: Style, id: string) =>
+  listOf(style).find((i) => i.id === id)?.recording
 
 const fmt = (v: number) =>
   Math.abs(v) >= 100 ? Math.round(v).toLocaleString() : String(+v.toFixed(2))
@@ -53,8 +63,10 @@ export function SoundOfData() {
   const [tone, setTone] = useState<Tone>({ bass: 0, treble: 0, reverb: 0.2 })
   const [pos, setPos] = useState(-1) // the step being played, -1 before the start
   const [playing, setPlaying] = useState(false)
+  const [loading, setLoading] = useState(false) // a recording is downloading
   const [problem, setProblem] = useState('')
   const player = useRef<Player | null>(null)
+  const ticket = useRef(0) // a newer start or a stop cancels a pending one
   const file = useRef<HTMLInputElement>(null)
   const dataId = useId()
   const colId = useId()
@@ -70,9 +82,11 @@ export function SoundOfData() {
   const { lo, hi } = range(s)
 
   const halt = () => {
+    ticket.current++
     player.current?.stop()
     player.current = null
     setPlaying(false)
+    setLoading(false)
   }
   useEffect(() => () => player.current?.stop(), [])
 
@@ -83,19 +97,37 @@ export function SoundOfData() {
     next()
   }
 
-  const start = (
+  const start = async (
     sound: Sound = {
       instrument: instrument[style],
       octave: PITCHES[pitch].octave,
     },
   ) => {
+    const my = ++ticket.current
     const from = pos < 0 || pos >= s.length - 1 ? 0 : pos + 1
+    const rec = recordingOf(style, sound.instrument)
+    let recording: Recorded | null = null
+    if (rec) {
+      setLoading(true)
+      try {
+        recording = await load(rec)
+      } catch {
+        if (my === ticket.current) {
+          setLoading(false)
+          setProblem(FAILED.instrument)
+        }
+        return
+      }
+      if (my !== ticket.current) return
+      setLoading(false)
+    }
     setPlaying(true)
     player.current = play({
       steps: s,
       from,
       style,
       ...sound,
+      recording,
       tone,
       perSecond: SPEEDS[speed].perSecond,
       onStep: setPos,
@@ -108,16 +140,18 @@ export function SoundOfData() {
 
   // A new instrument or pitch carries on from the same place.
   const retune = (sound: Sound) => {
-    if (!player.current) return
-    player.current.stop()
-    start(sound)
+    if (!player.current && !loading) return
+    player.current?.stop()
+    player.current = null
+    void start(sound)
   }
   const changeTone = (t: Partial<Tone>) => {
     const next = { ...tone, ...t }
     setTone(next)
     player.current?.setTone(next)
   }
-  const instruments = style === 'notes' ? NOTE_INSTRUMENTS : SLIDE_INSTRUMENTS
+  const instruments = listOf(style)
+  const recording = recordingOf(style, instrument[style])
   const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0')
 
   const read = async (f: File) => {
@@ -257,13 +291,25 @@ export function SoundOfData() {
             onChange={(e) => {
               const id = e.target.value as Sound['instrument']
               setInstrument({ ...instrument, [style]: id })
+              setProblem('')
+              const rec = recordingOf(style, id)
+              if (rec) load(rec).catch(() => {}) // start downloading now
               retune({ instrument: id, octave: PITCHES[pitch].octave })
             }}
           >
-            {instruments.map((ins) => (
-              <option key={ins.id} value={ins.id}>
-                {ins.name}
-              </option>
+            {[
+              { label: 'Built from tones', recorded: false },
+              { label: 'Recordings', recorded: true },
+            ].map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {instruments
+                  .filter((ins) => !!ins.recording === group.recorded)
+                  .map((ins) => (
+                    <option key={ins.id} value={ins.id}>
+                      {ins.name}
+                    </option>
+                  ))}
+              </optgroup>
             ))}
           </select>
         </div>
@@ -283,13 +329,18 @@ export function SoundOfData() {
         <button
           type="button"
           className="sound-play"
-          onClick={playing ? halt : () => start()}
+          disabled={loading}
+          onClick={playing ? halt : () => void start()}
         >
-          {playing
-            ? 'Pause'
-            : pos >= 0 && pos < s.length - 1
-              ? 'Resume'
-              : 'Play'}
+          {loading ? (
+            <Spinner />
+          ) : playing ? (
+            'Pause'
+          ) : pos >= 0 && pos < s.length - 1 ? (
+            'Resume'
+          ) : (
+            'Play'
+          )}
         </button>
       </div>
       <div className="sound-tone">
@@ -350,6 +401,9 @@ export function SoundOfData() {
         </div>
       </div>
       {data.credit && <p className="sound-credit">Data: {data.credit}</p>}
+      {recording && (
+        <p className="sound-credit">Recording: {CREDITS[recording]}</p>
+      )}
     </div>
   )
 }

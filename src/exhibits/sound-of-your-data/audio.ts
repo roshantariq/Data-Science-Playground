@@ -1,15 +1,11 @@
 // Plays the steps with Web Audio, a little ahead of time so the timing stays
 // even. Two styles to compare: Notes (one note per value on the five-note
 // scale, like Typing Rhythm) and Slide (one tone gliding to each value),
-// each with its own instruments. Outliers are louder in Notes, and both
+// each with its own instruments, built from tones or recorded. Outliers are louder in Notes, and both
 // styles add a short sharp click. Everything then goes through bass and
 // treble controls and a reverb, which can change while it plays.
-import {
-  glider,
-  strike,
-  type NoteInstrument,
-  type SlideInstrument,
-} from './instruments.ts'
+import { glider, strike, type BuiltNote } from './instruments.ts'
+import { gliderRecorded, strikeRecorded, type Recorded } from './recordings.ts'
 import { noteFreq, range, slideFreq, type Step } from './sound.ts'
 
 export type Style = 'notes' | 'slide'
@@ -24,6 +20,7 @@ export function play({
   from,
   style,
   instrument,
+  recording,
   octave,
   tone,
   perSecond,
@@ -33,7 +30,8 @@ export function play({
   steps: Step[]
   from: number
   style: Style
-  instrument: NoteInstrument | SlideInstrument
+  instrument: string
+  recording: Recorded | null // the loaded recording, for recorded ones
   octave: number
   tone: Tone
   perSecond: number
@@ -53,9 +51,14 @@ export function play({
   const wet = ctx.createGain()
   const verb = ctx.createConvolver()
   verb.buffer = room(ctx.sampleRate)
+  // A limiter last, so loud outliers can't distort.
+  const limit = ctx.createDynamicsCompressor()
+  limit.threshold.value = -6
+  limit.ratio.value = 12
+  limit.connect(ctx.destination)
   out.connect(bass).connect(treble)
-  treble.connect(dry).connect(ctx.destination)
-  treble.connect(verb).connect(wet).connect(ctx.destination)
+  treble.connect(dry).connect(limit)
+  treble.connect(verb).connect(wet).connect(limit)
   const setTone = (tone: Tone, t = ctx.currentTime) => {
     bass.gain.setTargetAtTime(tone.bass, t, 0.03)
     treble.gain.setTargetAtTime(tone.treble, t, 0.03)
@@ -74,16 +77,13 @@ export function play({
       window.setTimeout(fn, Math.max(0, (t - ctx.currentTime) * 1000)),
     )
 
+  const f0 = slideFreq(steps[from].value, lo, hi, octave)
   const glide =
-    style === 'slide'
-      ? glider(
-          ctx,
-          out,
-          instrument as SlideInstrument,
-          slideFreq(steps[from].value, lo, hi, octave),
-          t0,
-        )
-      : null
+    style !== 'slide'
+      ? null
+      : recording
+        ? gliderRecorded(ctx, out, recording, f0, t0)
+        : glider(ctx, out, f0, t0)
 
   let next = from
   const schedule = () => {
@@ -92,16 +92,12 @@ export function play({
       const t = when(i)
       const s = steps[i]
       if (glide) glide.to(slideFreq(s.value, lo, hi, octave), t, gap / 4)
-      else
-        strike(
-          ctx,
-          out,
-          instrument as NoteInstrument,
-          noteFreq(s.value, lo, hi, octave),
-          t,
-          gap,
-          s.outlier ? 0.34 : 0.15,
-        )
+      else {
+        const f = noteFreq(s.value, lo, hi, octave)
+        const vol = s.outlier ? 0.34 : 0.15
+        if (recording) strikeRecorded(ctx, out, recording, f, t, gap, vol)
+        else strike(ctx, out, instrument as BuiltNote, f, t, gap, vol)
+      }
       if (s.outlier) click(ctx, out, t)
       later(() => onStep(i), t)
     }

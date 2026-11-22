@@ -1,4 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import {
+  NOTE_INSTRUMENTS,
+  SLIDE_INSTRUMENTS,
+  type Instrument,
+} from './instruments.ts'
+import tuning from './recordings/tuning.json'
 import samples from './samples.json'
 import {
   madeUp,
@@ -121,5 +127,24 @@ describe('samples', () => {
       expect(
         outliers(s.columns[0].values).filter(Boolean).length,
       ).toBeGreaterThan(0)
+  })
+})
+
+describe('recordings', () => {
+  it('has a tuning for every recorded note, and notes for every instrument', () => {
+    const files = Object.keys(
+      import.meta.glob('./recordings/*/*.mp3', { query: '?url' }),
+    )
+    const listed = [...NOTE_INSTRUMENTS, ...SLIDE_INSTRUMENTS].flatMap(
+      (i: Instrument) => (i.recording ? [i.recording] : []),
+    )
+    for (const id of listed) {
+      const notes = files.filter((f) => f.split('/')[2] === id)
+      expect(notes.length).toBeGreaterThanOrEqual(5)
+      for (const f of notes) {
+        const midi = f.split('/')[3].replace('.mp3', '')
+        expect(tuning[id as keyof typeof tuning]).toHaveProperty(midi)
+      }
+    }
   })
 })

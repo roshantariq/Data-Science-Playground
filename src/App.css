@@ -958,6 +958,17 @@ p {
   cursor: pointer;
 }
 
+.sound-play .spinner {
+  display: inline-grid;
+  min-height: 0;
+}
+
+.sound-play .spinner svg {
+  width: 1.3em;
+  height: 1.3em;
+  fill: currentColor;
+}
+
 .sound-problem {
   font-weight: 600;
 }
