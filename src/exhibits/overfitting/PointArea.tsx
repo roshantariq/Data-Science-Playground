@@ -1,8 +1,10 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router'
 import { ErrorChart } from './ErrorChart.tsx'
 import { errorCurve } from './errors.ts'
 import { fitPolynomial, maxDegree, type Point } from './fit.ts'
 import { judge, message as verdictText } from './spot.ts'
+import { fitSurface } from './surface.ts'
 import {
   addPoint,
   curvePoints,
@@ -253,6 +255,17 @@ export function PointArea() {
           {cap < 1
             ? 'Needs at least 2 training points to draw a curve. Add points.'
             : `${cap + 1} training points allow up to degree ${cap}. Add points to go higher.`}
+        </p>
+      )}
+      {cap >= 1 && (
+        <p className="crossover">
+          {/* Opens the Ski Slope on this curve's training error. */}
+          <Link
+            to="/machines/gradient-descent"
+            state={{ fit: fitSurface(training, shown) }}
+          >
+            See how it got there
+          </Link>
         </p>
       )}
     </div>

@@ -1,6 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router'
+import { isFitSurface, type FitSurface } from '../overfitting/surface.ts'
 import { createSlopeView, type SlopeView } from './scene.ts'
 import {
+  fitLandscape,
   LANDSCAPES,
   landscape,
   roll,
@@ -35,9 +38,34 @@ function result(r: Roll) {
   return `Still rolling after ${n} steps. It ran out of time before reaching the bottom.`
 }
 
+// Which two of a curve's numbers the slope shows, in words: "its height
+// and its tilt", or "the numbers in front of x⁸ and x¹⁰".
+const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹'
+const x = (p: number) =>
+  p === 1 ? 'x' : 'x' + [...String(p)].map((d) => SUP[+d]).join('')
+function pair({ degree, powers: [i, j] }: FitSurface) {
+  if (degree === 1) return 'its height and its tilt'
+  if (i === 0) return `the number on its own and the one in front of ${x(j)}`
+  return `the numbers in front of ${x(i)} and ${x(j)}`
+}
+
 export function SkiSlope() {
-  const [id, setId] = useState<LandscapeId>('bowl')
-  const [land, setLand] = useState(() => landscape('bowl'))
+  // A curve handed over by the Overfitting Playground's link, if any. It
+  // lives only in this page's memory: the hand-over is then cleared, so a
+  // refresh starts as normal.
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [fit] = useState<FitSurface | null>(() => {
+    const f = (location.state as { fit?: unknown } | null)?.fit
+    return isFitSurface(f) ? f : null
+  })
+  useEffect(() => {
+    if (location.state) void navigate('.', { replace: true, state: null })
+  }, [location.state, navigate])
+  const [id, setId] = useState<LandscapeId>(fit ? 'fit' : 'bowl')
+  const [land, setLand] = useState(() =>
+    fit ? fitLandscape(fit) : landscape('bowl'),
+  )
   const [start, setStart] = useState(() => randomStart(land))
   const [rate, setRate] = useState(3)
   const [momentum, setMomentum] = useState(0)
@@ -50,7 +78,8 @@ export function SkiSlope() {
   const momentumId = useId()
 
   const rolling = run !== null && shown < run.steps.length - 1
-  const name = LANDSCAPES.find((l) => l.id === id)!.name
+  const name =
+    id === 'fit' ? 'Your fit' : LANDSCAPES.find((l) => l.id === id)!.name
 
   // Any change puts the ball back at its start.
   const reset = () => {
@@ -102,7 +131,7 @@ export function SkiSlope() {
   }
 
   const pick = (next: LandscapeId) => {
-    const l = landscape(next)
+    const l = next === 'fit' ? fitLandscape(fit!) : landscape(next)
     setId(next)
     setLand(l)
     setStart(randomStart(l))
@@ -119,6 +148,15 @@ export function SkiSlope() {
     <div className="slope">
       <div className="slope-bar" role="group" aria-label="Landscape">
         <span>Landscape</span>
+        {fit && (
+          <button
+            type="button"
+            aria-pressed={id === 'fit'}
+            onClick={() => pick('fit')}
+          >
+            Your fit
+          </button>
+        )}
         {LANDSCAPES.map((l) => (
           <button
             key={l.id}
@@ -130,6 +168,18 @@ export function SkiSlope() {
           </button>
         ))}
       </div>
+      {fit && id === 'fit' && (
+        <p className="slope-fit">
+          This is your degree-{fit.degree} curve from the{' '}
+          <Link to="/machines/overfitting">Overfitting Playground</Link>. The
+          height is its training error, and the two directions are two of its
+          numbers: {pair(fit)}. The rest stay at their best values, so the
+          lowest point is your curve. The Playground jumps straight there; here
+          you can watch gradient descent feel its way down. The higher the
+          degree, the flatter the valley floor and the slower the ball crawls
+          along it; momentum helps.
+        </p>
+      )}
       <div className="slope-view">
         <div
           ref={host}

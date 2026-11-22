@@ -1,12 +1,15 @@
-// The Ski Slope's maths: four landscapes, and the ball rolling down them by
+// The Ski Slope's maths: four landscapes (plus one made from a fitted curve
+// in the Overfitting Playground), and the ball rolling down them by
 // gradient descent with momentum. Plain TypeScript, no React or Three.js,
 // so it can be tested. The landscape covers x and y from -1 to 1, and its
 // height is scaled to run from 0 (lowest point) to 1 (highest).
 
-export type Rand = () => number
-export type LandscapeId = 'bowl' | 'valley' | 'two-valleys' | 'bumpy'
+import type { FitSurface } from '../overfitting/surface.ts'
 
-export const LANDSCAPES: { id: LandscapeId; name: string }[] = [
+export type Rand = () => number
+export type LandscapeId = 'bowl' | 'valley' | 'two-valleys' | 'bumpy' | 'fit'
+
+export const LANDSCAPES: { id: Exclude<LandscapeId, 'fit'>; name: string }[] = [
   { id: 'bowl', name: 'Bowl' },
   { id: 'valley', name: 'Narrow valley' },
   { id: 'two-valleys', name: 'Two valleys' },
@@ -83,10 +86,23 @@ function shape(id: LandscapeId, rand: Rand): Fn {
 const GRID = 120
 
 export function landscape(
-  id: LandscapeId,
+  id: Exclude<LandscapeId, 'fit'>,
   rand: Rand = Math.random,
 ): Landscape {
-  const f = shape(id, rand)
+  return scaled(id, shape(id, rand))
+}
+
+// A fitted curve's training error over two of its numbers (see
+// overfitting/surface.ts), centred on the best fit.
+export function fitLandscape(s: FitSurface): Landscape {
+  return {
+    ...scaled('fit', (x, y) => s.a * x * x + 2 * s.b * x * y + s.c * y * y),
+    lowest: { x: 0, y: 0 },
+  }
+}
+
+// Heights scaled to run from 0 to 1 over the map.
+function scaled(id: LandscapeId, f: Fn): Landscape {
   let min = Infinity
   let max = -Infinity
   let lowest = { x: 0, y: 0 }
