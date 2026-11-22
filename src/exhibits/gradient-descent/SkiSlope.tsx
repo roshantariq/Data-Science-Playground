@@ -33,6 +33,8 @@ function result(r: Roll) {
   if (r.outcome === 'lowest') return `Reached the lowest point in ${n} steps.`
   if (r.outcome === 'stuck')
     return `Settled in a dip after ${n} steps, but it isn't the lowest point.`
+  if (r.outcome === 'floor')
+    return `Stopped on the flat valley floor after ${n} steps, short of the lowest point. The slope there is too gentle to push it any further.`
   if (r.outcome === 'bouncing')
     return `Still bouncing after ${n} steps. The learning rate is too high for it to settle.`
   return `Still rolling after ${n} steps. It ran out of time before reaching the bottom.`

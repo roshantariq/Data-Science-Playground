@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { LANDSCAPES, landscape, MAX_STEPS, roll } from './slopes.ts'
+import { fitSurface } from '../overfitting/surface.ts'
+import {
+  fitLandscape,
+  LANDSCAPES,
+  landscape,
+  MAX_STEPS,
+  roll,
+} from './slopes.ts'
 
 // A repeatable stand-in for Math.random.
 const seeded = (seed: number) => () => {
@@ -59,6 +66,15 @@ describe('roll', () => {
       const shallow = { x: -land.lowest.x, y: -land.lowest.y }
       expect(roll(land, shallow, 0.3, 0).outcome).toBe('stuck')
     }
+  })
+
+  it('on a degree-10 fit, stops short on the flat floor unless it has momentum', () => {
+    const r = seeded(7)
+    const points = Array.from({ length: 20 }, () => ({ x: r() * 10, y: 0 }))
+    const land = fitLandscape(fitSurface(points, 10))
+    const start = { x: -0.9, y: -0.7 }
+    expect(roll(land, start, 1, 0).outcome).toBe('floor')
+    expect(roll(land, start, 1, 0.9).outcome).toBe('lowest')
   })
 
   it('never leaves the map', () => {
