@@ -34,6 +34,16 @@ export function Privacy() {
           <b>Sound of Your Data:</b> a CSV file you upload is read in your
           browser and never sent anywhere. It's gone when you leave.
         </li>
+        <li>
+          <b>Be the Algorithm:</b> the splits you make stay in the page and are
+          gone when you leave.
+        </li>
+        <li>
+          <b>Links between exhibits:</b> "See how it got there" and "Hear it as
+          data" pass your curve or your typing timings to the next exhibit
+          inside your browser. Letters are never passed on, nothing is sent
+          anywhere, and refreshing the page clears it.
+        </li>
       </ul>
       <h2>Visitor statistics</h2>
       <p>
