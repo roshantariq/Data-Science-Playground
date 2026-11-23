@@ -29,6 +29,11 @@ import {
   TryThis as NetTryThis,
 } from '../exhibits/neural-net-peek/Explainer.tsx'
 import { NetPeek } from '../exhibits/neural-net-peek/NetPeek.tsx'
+import {
+  Explainer as MeanExplainer,
+  TryThis as MeanTryThis,
+} from '../exhibits/regression-to-the-mean/Explainer.tsx'
+import { ReactionGame } from '../exhibits/regression-to-the-mean/ReactionGame.tsx'
 import { NotFound } from './NotFound.tsx'
 
 // These exhibits bring big libraries or data, so their code loads only when
@@ -78,6 +83,8 @@ export function Exhibit() {
         <SplitArea />
       ) : exhibit.slug === 'neural-net-peek' ? (
         <NetPeek />
+      ) : exhibit.slug === 'regression-to-the-mean' ? (
+        <ReactionGame />
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
@@ -96,6 +103,8 @@ export function Exhibit() {
             <TreeExplainer />
           ) : exhibit.slug === 'neural-net-peek' ? (
             <NetExplainer />
+          ) : exhibit.slug === 'regression-to-the-mean' ? (
+            <MeanExplainer />
           ) : (
             <p>
               Explains the idea in one paragraph once you have tried the
@@ -109,6 +118,7 @@ export function Exhibit() {
         {exhibit.slug === 'sound-of-your-data' && <SoundTryThis />}
         {exhibit.slug === 'be-the-algorithm' && <TreeTryThis />}
         {exhibit.slug === 'neural-net-peek' && <NetTryThis />}
+        {exhibit.slug === 'regression-to-the-mean' && <MeanTryThis />}
       </div>
       {next && (
         <section className="next-up" aria-labelledby="next-up-heading">

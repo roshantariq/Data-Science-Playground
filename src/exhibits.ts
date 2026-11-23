@@ -69,7 +69,7 @@ export const EXHIBITS: Exhibit[] = [
     wing: 'feel',
     title: 'Regression to the Mean, Live',
     line: 'Was your best round just luck?',
-    open: false,
+    open: true,
   },
   {
     slug: 'calibration-check',

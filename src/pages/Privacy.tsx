@@ -43,6 +43,10 @@ export function Privacy() {
           the page and are gone when you leave.
         </li>
         <li>
+          <b>Regression to the Mean:</b> your reaction times stay in the page
+          and are gone when you leave.
+        </li>
+        <li>
           <b>Links between exhibits:</b> "See how it got there" and "Hear it as
           data" pass your curve or your typing timings to the next exhibit
           inside your browser. Letters are never passed on, nothing is sent
