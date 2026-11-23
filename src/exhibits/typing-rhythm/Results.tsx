@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { canSave, deleteBest, loadBest, saveBest } from './best.ts'
 import {
   bars,
@@ -326,6 +327,11 @@ function Timeline({
           >
             Hear it as data
           </Link>
+          <InfoTip about="Play my rhythm and Hear it as data">
+            Play my rhythm plays this sentence back as notes, with the timing
+            you typed it. Hear it as data opens your whole round in Sound of
+            Your Data.
+          </InfoTip>
           <span className="nav">
             <button
               type="button"

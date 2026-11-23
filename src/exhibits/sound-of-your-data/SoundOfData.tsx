@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { Spinner } from '../../components/Spinner.tsx'
 import { play, type Player, type Style, type Tone } from './audio.ts'
 import type { CsvResult } from './csv.worker.ts'
@@ -217,6 +218,10 @@ export function SoundOfData() {
     <div className="sound">
       <div className="sound-pick">
         <label htmlFor={dataId}>Data</label>
+        <InfoTip about="Data">
+          Pick a dataset to listen to. The made-up ones are new each time you
+          load the page.
+        </InfoTip>
         <select
           id={dataId}
           value={data.id}
@@ -255,6 +260,10 @@ export function SoundOfData() {
         {data.columns.length > 1 && (
           <>
             <label htmlFor={colId}>Column</label>
+            <InfoTip about="Column">
+              Which column of numbers to play. Each value becomes a note, with
+              higher values playing higher.
+            </InfoTip>
             <select
               id={colId}
               value={col}
@@ -271,6 +280,10 @@ export function SoundOfData() {
         <button type="button" onClick={() => file.current?.click()}>
           Upload a CSV
         </button>
+        <InfoTip about="Upload a CSV">
+          Use your own file, up to 5 MB and 50,000 rows. It stays in your
+          browser and is never sent anywhere.
+        </InfoTip>
         <input
           ref={file}
           type="file"
@@ -302,6 +315,10 @@ export function SoundOfData() {
       <div className="sound-controls">
         <div role="group" aria-label="Sound">
           <span>Sound</span>
+          <InfoTip about="Sound">
+            Notes plays each value as its own note. Slide glides from one value
+            to the next, so you hear the trend as one line rising and falling.
+          </InfoTip>
           {STYLES.map((st) => (
             <button
               key={st.id}
@@ -315,6 +332,10 @@ export function SoundOfData() {
         </div>
         <div className="sound-field">
           <label htmlFor={instrumentId}>Instrument</label>
+          <InfoTip about="Instrument">
+            Changes only how it sounds, not what it plays. Recordings are real
+            instruments and take a moment to load the first time.
+          </InfoTip>
           <select
             id={instrumentId}
             value={instrument[style]}
@@ -345,6 +366,11 @@ export function SoundOfData() {
         </div>
         <div role="group" aria-label="Speed">
           <span>Speed</span>
+          <InfoTip about="Speed">
+            How many notes play each second: 4, 8 or 16. Faster makes long
+            trends easier to hear. Slower makes single values easier to pick
+            out.
+          </InfoTip>
           {SPEEDS.map((sp, i) => (
             <button
               key={sp.name}
@@ -376,6 +402,9 @@ export function SoundOfData() {
       <div className="sound-tone">
         <div role="group" aria-label="Pitch">
           <span>Pitch</span>
+          <InfoTip about="Pitch">
+            Moves every note down or up an octave. The pattern stays the same.
+          </InfoTip>
           {PITCHES.map((p, i) => (
             <button
               key={p.name}
@@ -401,6 +430,10 @@ export function SoundOfData() {
             aria-valuetext={signed(tone.bass)}
             onChange={(e) => changeTone({ bass: Number(e.target.value) })}
           />
+          <InfoTip about="Bass, Treble and Reverb">
+            Bass and Treble turn the low and high sounds up or down. Reverb adds
+            echo, like playing in a bigger room. None of them change the data.
+          </InfoTip>
         </div>
         <div className="sound-field">
           <label htmlFor={trebleId}>Treble {signed(tone.treble)}</label>

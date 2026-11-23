@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { PATTERNS, randomDots, type PatternId } from './data.ts'
 import {
   accuracy,
@@ -365,6 +366,11 @@ export function SplitArea() {
       <div className="split-bars">
         <div className="tree-bar" role="group" aria-label="Pattern">
           <span>Pattern</span>
+          <InfoTip about="Pattern">
+            Sets how the circles and squares are laid out. Blobs is the easiest
+            to split with straight lines. Ring and Checkerboard are harder. New
+            points draws the same pattern again.
+          </InfoTip>
           {PATTERNS.map((p) => (
             <button
               key={p.id}
@@ -385,6 +391,10 @@ export function SplitArea() {
         </div>
         <div className="tree-bar" role="group" aria-label="Splits allowed">
           <span>Splits allowed</span>
+          <InfoTip about="Splits allowed">
+            How many cuts you get. The real tree gets the same number, so the
+            race is fair. Changing it starts over.
+          </InfoTip>
           {BUDGETS.map((n) => (
             <button
               key={n}
@@ -436,6 +446,11 @@ export function SplitArea() {
           <>
             <div className="tree-bar" role="group" aria-label="Line direction">
               <span>Cut</span>
+              <InfoTip about="Cut">
+                Left and right cuts with an up-and-down line. Top and bottom
+                cuts with a level line. A decision tree can only cut straight
+                across, never at an angle.
+              </InfoTip>
               {(['x', 'y'] as const).map((a) => (
                 <button
                   key={a}
@@ -455,6 +470,10 @@ export function SplitArea() {
                 <label htmlFor={sliderId}>
                   {axis} &lt; {fixed(at)}
                 </label>
+                <InfoTip about="the slider and Split">
+                  Slide to move the line, then press Split to cut the region in
+                  two. Each side takes the shape that most of its points have.
+                </InfoTip>
                 <input
                   id={sliderId}
                   type="range"
@@ -512,9 +531,17 @@ export function SplitArea() {
           )}
         </div>
         {!raced && used > 0 && (
-          <button type="button" className="split-race" onClick={startRace}>
-            Race the tree
-          </button>
+          <div className="info-row">
+            <button type="button" className="split-race" onClick={startRace}>
+              Race the tree
+            </button>
+            <InfoTip about="Race the tree">
+              A real decision tree makes the same number of splits. It picks
+              each one by how cleanly it separates the shapes (its Gini
+              impurity). Then you're both scored on test points neither of you
+              has seen.
+            </InfoTip>
+          </div>
         )}
       </div>
       <div ref={result} className="split-result" aria-live="polite">

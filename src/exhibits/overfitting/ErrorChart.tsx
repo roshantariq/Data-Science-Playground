@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { chartScale, type ErrorRow } from './errors.ts'
 
 const W = 500
@@ -59,15 +60,21 @@ export function ErrorChart({
             ? 'Test error went off the top. Turn on Log scale to see all of it.'
             : 'Error (lower is better)'}
         </span>
-        <label htmlFor={switchId}>
-          <input
-            id={switchId}
-            type="checkbox"
-            checked={log}
-            onChange={(e) => setLog(e.target.checked)}
-          />{' '}
-          Log scale
-        </label>
+        <span className="info-label">
+          <label htmlFor={switchId}>
+            <input
+              id={switchId}
+              type="checkbox"
+              checked={log}
+              onChange={(e) => setLog(e.target.checked)}
+            />{' '}
+            Log scale
+          </label>
+          <InfoTip about="Log scale">
+            Spreads out the small errors so you can still compare them after one
+            degree's error shoots up.
+          </InfoTip>
+        </span>
       </figcaption>
       <svg
         viewBox={`0 0 ${W} ${H}`}

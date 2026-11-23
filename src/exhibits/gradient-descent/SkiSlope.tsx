@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { isFitSurface, type FitSurface } from '../overfitting/surface.ts'
 import { createSlopeView, type SlopeView } from './scene.ts'
 import {
@@ -152,6 +153,12 @@ export function SkiSlope() {
     <div className="slope">
       <div className="slope-bar" role="group" aria-label="Landscape">
         <span>Landscape</span>
+        <InfoTip about="Landscape">
+          Each landscape is a different loss surface. Bowl has one lowest point.
+          Two valleys and Bumpy have dips where the ball can get stuck.
+          {fit &&
+            ' Your fit is the training error of the curve you made in Overfitting Playground.'}
+        </InfoTip>
         {fit && (
           <button
             type="button"
@@ -199,7 +206,13 @@ export function SkiSlope() {
         )}
       </div>
       <div className="slope-controls">
-        <label htmlFor={rateId}>Learning rate {RATES[rate]}</label>
+        <span className="info-label">
+          <label htmlFor={rateId}>Learning rate {RATES[rate]}</label>
+          <InfoTip about="Learning rate">
+            How big a step the ball takes each time. Too small and it crawls.
+            Too big and it overshoots the bottom and bounces around.
+          </InfoTip>
+        </span>
         <input
           id={rateId}
           type="range"
@@ -212,7 +225,14 @@ export function SkiSlope() {
             reset()
           }}
         />
-        <label htmlFor={momentumId}>Momentum {momentum.toFixed(2)}</label>
+        <span className="info-label">
+          <label htmlFor={momentumId}>Momentum {momentum.toFixed(2)}</label>
+          <InfoTip about="Momentum">
+            How much of its last step the ball carries into the next one. More
+            momentum can carry it over small bumps, but it can also roll past
+            the bottom.
+          </InfoTip>
+        </span>
         <input
           id={momentumId}
           type="range"
@@ -239,6 +259,10 @@ export function SkiSlope() {
           >
             New start
           </button>
+          <InfoTip about="Roll and New start">
+            Roll lets the ball go. New start drops it somewhere else at random.
+            You can also tap the slope to pick where it starts.
+          </InfoTip>
         </div>
       </div>
       <p className="slope-status" aria-live="polite">
