@@ -48,7 +48,7 @@ export const EXHIBITS: Exhibit[] = [
     wing: 'machines',
     title: 'Neural Net Peek',
     line: 'Watch neurons carve up the space.',
-    open: false,
+    open: true,
   },
   {
     slug: 'typing-rhythm',

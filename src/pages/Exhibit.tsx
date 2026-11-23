@@ -24,6 +24,11 @@ import {
   TryThis as TreeTryThis,
 } from '../exhibits/be-the-algorithm/Explainer.tsx'
 import { SplitArea } from '../exhibits/be-the-algorithm/SplitArea.tsx'
+import {
+  Explainer as NetExplainer,
+  TryThis as NetTryThis,
+} from '../exhibits/neural-net-peek/Explainer.tsx'
+import { NetPeek } from '../exhibits/neural-net-peek/NetPeek.tsx'
 import { NotFound } from './NotFound.tsx'
 
 // These exhibits bring big libraries or data, so their code loads only when
@@ -71,6 +76,8 @@ export function Exhibit() {
         </Suspense>
       ) : exhibit.slug === 'be-the-algorithm' ? (
         <SplitArea />
+      ) : exhibit.slug === 'neural-net-peek' ? (
+        <NetPeek />
       ) : (
         <div className="placeholder">The exhibit goes here</div>
       )}
@@ -87,6 +94,8 @@ export function Exhibit() {
             <SoundExplainer />
           ) : exhibit.slug === 'be-the-algorithm' ? (
             <TreeExplainer />
+          ) : exhibit.slug === 'neural-net-peek' ? (
+            <NetExplainer />
           ) : (
             <p>
               Explains the idea in one paragraph once you have tried the
@@ -99,6 +108,7 @@ export function Exhibit() {
         {exhibit.slug === 'gradient-descent' && <SlopeTryThis />}
         {exhibit.slug === 'sound-of-your-data' && <SoundTryThis />}
         {exhibit.slug === 'be-the-algorithm' && <TreeTryThis />}
+        {exhibit.slug === 'neural-net-peek' && <NetTryThis />}
       </div>
       {next && (
         <section className="next-up" aria-labelledby="next-up-heading">
