@@ -2235,6 +2235,141 @@ p {
   stroke: var(--feel-mark);
 }
 
+/* Regression to the Mean, Live: one column. The panel is the game: plain
+   while waiting, green when it's time to tap. */
+.rm {
+  display: grid;
+  gap: 12px;
+  max-width: 720px;
+}
+
+.rm-prompt {
+  max-width: 80ch;
+}
+
+.rm-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rm-panel {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  min-height: 220px;
+  padding: 16px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: 600 var(--text-lg) var(--font-body);
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.rm-panel.go {
+  border-color: var(--machines);
+  background: var(--machines);
+  color: var(--on-machines);
+  font: 700 var(--text-display) var(--font-display);
+}
+
+.rm-panel.early {
+  border-color: var(--feel-mark);
+}
+
+.rm-panel small {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.rm-big {
+  font: 700 var(--text-display) / 1.1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 699px) {
+  .rm-panel {
+    min-height: 180px;
+  }
+
+  /* The chart shrinks to about half size on phones; its text doesn't. */
+  .rm-chart svg text {
+    font-size: 22px;
+  }
+}
+
+.rm-chart svg {
+  aspect-ratio: 30 / 13;
+}
+
+.rm-chart .rm-avg {
+  stroke: var(--guide-strong);
+  stroke-width: 1.5px;
+  stroke-dasharray: 6 5;
+}
+
+.rm-chart text {
+  font: 14px var(--font-body);
+  fill: var(--text-muted);
+}
+
+.rm-chart text.rm-label {
+  font-weight: 600;
+  fill: var(--text);
+}
+
+/* Labels stay readable where the lines cross them. */
+.rm-chart text {
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.rm-chart .rm-dot {
+  fill: var(--point);
+}
+
+.rm-chart .rm-fast {
+  fill: var(--action);
+}
+
+.rm-chart .rm-arrow {
+  stroke: var(--action);
+  stroke-width: 2px;
+}
+
+.rm-chart path.rm-head {
+  fill: var(--action);
+  stroke: none;
+}
+
+.rm-summary {
+  display: grid;
+  gap: 8px;
+  max-width: 80ch;
+}
+
+.rm-summary p {
+  margin: 0;
+}
+
+.rm-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+
 /* Info tips: a small "i" beside a control, its note above it. Kept last
    and a step more specific, so the exhibits' own button and span rules
    don't reach them. */

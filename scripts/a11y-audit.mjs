@@ -19,6 +19,7 @@ const PAGES = [
   '/machines/neural-net-peek',
   '/feel/typing-rhythm',
   '/feel/sound-of-your-data',
+  '/feel/regression-to-the-mean',
   '/about',
   '/privacy',
   '/no-such-page',
@@ -30,6 +31,7 @@ const TAB_PAGES = [
   '/machines/neural-net-peek',
   '/feel/typing-rhythm',
   '/feel/sound-of-your-data',
+  '/feel/regression-to-the-mean',
   '/about',
 ]
 const TAGS = [
