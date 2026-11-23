@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { PATTERNS, randomPoints, type PatternId } from './data.ts'
 import { paint, rgb } from './draw.ts'
 import {
@@ -142,6 +143,7 @@ function Stepper({
   max,
   less,
   more,
+  tip,
   onChange,
 }: {
   label: string
@@ -150,11 +152,13 @@ function Stepper({
   max: number
   less: string
   more: string
+  tip: string
   onChange: (v: number) => void
 }) {
   return (
     <div className="tree-bar" role="group" aria-label={label}>
       <span>{label}</span>
+      <InfoTip about={label}>{tip}</InfoTip>
       <button
         type="button"
         aria-label={less}
@@ -268,6 +272,11 @@ export function NetPeek() {
       <div className="nn-bars">
         <div className="tree-bar" role="group" aria-label="Pattern">
           <span>Pattern</span>
+          <InfoTip about="Pattern">
+            Sets how the circles and squares are laid out. Two spirals is the
+            hardest and needs at least two layers. One neuron can handle Blobs.
+            New points draws the same pattern again.
+          </InfoTip>
           {PATTERNS.map((p) => (
             <button
               key={p.id}
@@ -293,6 +302,7 @@ export function NetPeek() {
           max={3}
           less="Remove a layer"
           more="Add a layer"
+          tip="Each layer builds on the shapes the layer before it found. One layer can only draw simple curves. Two can wrap around the spirals. Changing it starts training again."
           onChange={(v) => {
             setLayers(v)
             rebuild(points, v, width)
@@ -305,6 +315,7 @@ export function NetPeek() {
           max={8}
           less="Remove a neuron from each layer"
           more="Add a neuron to each layer"
+          tip="Each neuron gives the network one more line to bend its boundary with. Too few and it can't follow the pattern. Changing it starts training again."
           onChange={(v) => {
             setWidth(v)
             rebuild(points, layers, v)
@@ -354,6 +365,11 @@ export function NetPeek() {
         >
           {running ? 'Pause' : 'Train'}
         </button>
+        <InfoTip about="Train">
+          Each pass through all the training points is one epoch. Watch the
+          chart: if the test line climbs while the training line keeps falling,
+          the network is overfitting.
+        </InfoTip>
         {epochs > 0 && (
           <button
             type="button"

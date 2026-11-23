@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { column, COLUMNS, level } from './meters.ts'
 import { Results } from './Results.tsx'
 import { coarse } from './samples.ts'
@@ -112,6 +113,10 @@ export function TypingRound() {
       <div className="typing-bar">
         <div role="group" aria-label="Sentences in a round">
           <span>Sentences</span>
+          <InfoTip about="Sentences">
+            How many sentences are in a round. Changing it starts a new round.
+            Longer rounds give steadier stats.
+          </InfoTip>
           {LENGTHS.map((n) => (
             <button
               key={n}

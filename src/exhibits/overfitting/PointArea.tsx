@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router'
+import { InfoTip } from '../../components/InfoTip.tsx'
 import { ErrorChart } from './ErrorChart.tsx'
 import { errorCurve } from './errors.ts'
 import { fitPolynomial, maxDegree, type Point } from './fit.ts'
@@ -192,6 +193,11 @@ export function PointArea() {
       <ErrorChart rows={errors} degree={shown} best={verdict?.best} />
       <div className="point-controls">
         <label htmlFor={sliderId}>Degree {cap >= 1 ? shown : '–'}</label>
+        <InfoTip about="Degree">
+          Degree sets how much the curve can bend. Degree 1 is a straight line.
+          Push it high enough and the curve passes through every training point,
+          and that's when it starts missing the test points.
+        </InfoTip>
         <input
           id={sliderId}
           type="range"
@@ -215,6 +221,10 @@ export function PointArea() {
           >
             Check
           </button>
+          <InfoTip about="Check">
+            Press it when you think the curve has started to overfit. It tells
+            you how close you were.
+          </InfoTip>
           <button
             type="button"
             onClick={() => {
@@ -236,6 +246,10 @@ export function PointArea() {
           <button type="button" onClick={() => setPoints(newSplit(points))}>
             New split
           </button>
+          <InfoTip about="New split">
+            New split picks a different 30% of the points to hold back as test
+            points. The curve is only ever fitted to the training points.
+          </InfoTip>
         </div>
         <p aria-live="polite">
           <Mark test={false} /> {training.length} training, <Mark test={true} />{' '}
